@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A3A22">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fleet">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Agrimatco - Fleet</title>
+<style>
+:root{--g1:#1AC56D;--g2:#0A8F4B;--g3:#05643A;--edge:#04512E;--ink:#10241A;--bg:#E9F0EC;--line:#C3D3C9;--dark:#0A3A22}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,"SF Arabic","Segoe UI",Tahoma,Arial,sans-serif;font-size:16px}
+body{display:flex;flex-direction:column;overflow:hidden}
+#header{display:flex;align-items:center;gap:14px;padding:calc(10px + env(safe-area-inset-top)) 16px 14px;background:linear-gradient(90deg,#0A3A22,#05643A,#0A8F4B);border-radius:0 0 22px 22px;box-shadow:0 4px 14px rgba(0,0,0,.25);z-index:5;flex:none}
+#header .badge{width:54px;height:54px;border-radius:50%;background:linear-gradient(#fff,#D9E4DD);border:2px solid rgba(255,255,255,.5);padding:5px;box-shadow:0 3px 8px rgba(0,0,0,.3)}
+#header .badge img{width:100%;height:100%;object-fit:contain}
+#header .t1{color:#fff;font-size:21px;font-weight:700;direction:ltr;text-align:right;letter-spacing:.03em;text-shadow:0 2px 3px rgba(0,0,0,.5)}
+#header .t2{color:#CFF0DC;font-size:12px}
+#host{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#nav{display:flex;background:#fff;box-shadow:0 -3px 12px rgba(0,0,0,.12);padding-bottom:env(safe-area-inset-bottom);flex:none}
+#nav button{flex:1;border:0;background:none;padding:8px 0 6px;font:inherit;font-size:12px;color:#6B7C73;display:flex;flex-direction:column;align-items:center;gap:2px}
+#nav button .ic{font-size:22px;line-height:26px;width:60px;border-radius:14px}
+#nav button.on{color:var(--g3);font-weight:700}
+#nav button.on .ic{background:#CDEFD9}
+.holder{padding:14px 14px 22px}
+.card{background:#fff;border:1px solid #DCE6E0;border-radius:20px;padding:16px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
+.lbl{padding:6px 0;line-height:1.55;white-space:pre-line}
+.lbl.b{color:var(--g3);font-weight:700}
+input,textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:#FBFDFC;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:6px 0;outline:none}
+input:focus,textarea:focus{border-color:var(--g2)}
+input.err,textarea.err{border-color:#C62828;background:#FDECEA}
+.btn{display:block;width:100%;margin:6px 0;min-height:52px;padding:10px 16px 14px;font:inherit;font-size:16px;font-weight:700;color:#fff;border:0;border-radius:14px;text-shadow:0 1px 2px rgba(0,0,0,.4);background:linear-gradient(var(--g1),var(--g2));box-shadow:0 4px 0 var(--edge);position:relative;top:0;transition:none}
+.btn:active{top:3px;box-shadow:0 1px 0 var(--edge)}
+.btn:disabled{opacity:.6}
+.banner{font-size:13px;padding:8px 12px;border-radius:12px;margin:0 0 10px;white-space:pre-line}
+.banner.ok{background:#E6F5EC;color:#2E7D32}.banner.wait{background:#FFF3E0;color:#E65100}.banner.bad{background:#FDECEA;color:#C62828}
+.pt{padding:6px 0;line-height:1.55;white-space:pre-line;font-size:15px;border-bottom:1px dashed #E1EBE5;cursor:pointer}
+.inv{display:flex;gap:10px;align-items:center;padding:10px;margin:6px 0;background:#F4F9F6;border:1px solid #DCE6E0;border-radius:14px}
+.inv img{width:80px;height:80px;border-radius:14px;object-fit:cover;flex:none;background:#dfe9e3}
+.inv .tx{flex:1;font-size:14px;line-height:1.6;white-space:pre-line}
+.inv .del{border:0;background:#FDECEA;color:#C62828;border-radius:10px;padding:8px 10px;font:inherit;font-size:18px}
+.avatar{width:120px;height:120px;border-radius:14px;object-fit:cover;display:block;margin:6px 0}
+#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(20,30,25,.92);color:#fff;padding:10px 18px;border-radius:22px;font-size:14px;max-width:88%;text-align:center;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:40;padding:20px}
+.modal{background:#fff;border-radius:18px;padding:20px;width:100%;max-width:380px;max-height:86%;overflow:auto;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.modal h3{margin:0 0 8px;font-size:18px;color:var(--g3)}
+.modal .msg{white-space:pre-line;line-height:1.6;font-size:15px;margin-bottom:6px}
+.modal .row{display:flex;gap:10px;margin-top:12px}
+.modal .row button{flex:1;font:inherit;font-weight:700;font-size:15px;padding:12px;border-radius:12px;border:0}
+.modal .row .ok{background:var(--g2);color:#fff}.modal .row .no{background:#E9F0EC;color:var(--ink)}
+/* شاشة الدخول */
+#login{position:fixed;inset:0;overflow-y:auto;background:linear-gradient(135deg,#052619,#0A3D24,#0A8F4B);z-index:30;display:none}
+#login .col{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(24px + env(safe-area-inset-top)) 20px calc(20px + env(safe-area-inset-bottom))}
+#login .badge{width:104px;height:104px;border-radius:50%;background:linear-gradient(#fff,#D9E4DD);border:2px solid rgba(255,255,255,.5);padding:8px;box-shadow:0 6px 16px rgba(0,0,0,.4)}
+#login .badge img{width:100%;height:100%;object-fit:contain}
+#login h1{color:#fff;font-size:26px;margin:14px 0 2px;direction:ltr;text-shadow:0 2px 4px rgba(0,0,0,.5)}
+#login .sub{color:#CFF0DC;font-size:13px;margin-bottom:18px}
+#login .card{width:100%;max-width:420px;border-radius:22px;padding:20px 20px 16px;box-shadow:0 10px 26px rgba(0,0,0,.35)}
+#login .card h2{margin:0;text-align:center;font-size:19px;color:var(--g3)}
+#login .card .s{text-align:center;font-size:13px;padding:6px 0}
+#login .st{color:#C62828;text-align:center;font-size:14px;min-height:22px;padding:6px 0}
+#login .shw{font-size:14px;display:flex;align-items:center;gap:8px;padding:4px 0}
+#login .shw input{width:auto;margin:0}
+#login .cp{color:rgba(255,255,255,.7);font-size:12px;margin-top:18px}
+.ios-tip{background:#FFF8E1;color:#6D4C00;border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.6;margin:0 0 12px}
+</style>
+</head>
+<body>
+<div id="header"><div class="badge"><img src="icons/logo.png" alt="Agrimatco"></div><div><div class="t1">Agrimatco - Fleet</div><div class="t2">متابعة المركبة والسائق</div></div></div>
+<div id="host"></div>
+<div id="nav">
+  <button data-t="trip"><span class="ic">🧭</span>الرحلة</button>
+  <button data-t="inv"><span class="ic">📷</span>الفواتير</button>
+  <button data-t="sync"><span class="ic">📤</span>الإرسال</button>
+</div>
+<div id="login"><div class="col">
+  <div class="badge"><img src="icons/logo.png" alt=""></div>
+  <h1>Agrimatco - Fleet</h1><div class="sub">متابعة المركبة والسائق</div>
+  <div class="card">
+    <h2>تسجيل دخول السائق</h2><div class="s">أدخل البيانات التي أعطاك إياها المدير</div>
+    <div id="iosTip" class="ios-tip" style="display:none">لتثبيت التطبيق على الآيفون: اضغط زر المشاركة <b>⬆︎</b> في Safari ثم <b>إضافة إلى الشاشة الرئيسية</b>، وافتحه من الأيقونة.</div>
+    <input id="lu" placeholder="اسم المستخدم" autocapitalize="none" autocomplete="username" autocorrect="off" spellcheck="false">
+    <input id="lp" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+    <label class="shw"><input type="checkbox" id="lshow"> إظهار كلمة المرور</label>
+    <div class="st" id="lst"></div>
+    <button class="btn" id="lgo">تسجيل الدخول</button>
+  </div>
+  <div class="cp">© Agrimatco</div>
+</div></div>
+<div id="toast"></div>
+
+<script>
+'use strict';
+/* ===== إعدادات Firebase (من google-services.json في تطبيق أندرويد) ===== */
+const API_KEY = 'AIzaSyCLDwNeAXpFOgTOdVz2YYXCwRe9AiTz2nI';
+const DB_URL  = 'https://agrimatico-fleet-default-rtdb.europe-west1.firebasedatabase.app';
+
+/* ===== أدوات عامة ===== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+const fmt = d => d % 1 === 0 ? String(d) : d.toFixed(1);
+const dur = ms => { const m = Math.floor(Math.max(0, ms) / 60000), h = Math.floor(m / 60); return h > 0 ? `${h} س ${m % 60} د` : `${m} د`; };
+const timeStr = t => { const d = new Date(t); return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+/** يقبل الأرقام العربية ٠-٩ والفاصلة العربية */
+const num = s => { const t = String(s||'').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[٫,]/g, '.').trim(); return t === '' || isNaN(+t) ? null : +t; };
+let toastT; function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2600); }
+
+function dlg({ title, msg, body, ok = 'حفظ', cancel = 'إلغاء', onOk }) {
+  const bg = document.createElement('div'); bg.className = 'modal-bg';
+  bg.innerHTML = `<div class="modal">${title ? `<h3>${esc(title)}</h3>` : ''}<div class="msg">${esc(msg || '')}</div><div class="b"></div><div class="row"><button class="no">${esc(cancel)}</button><button class="ok">${esc(ok)}</button></div></div>`;
+  if (body) bg.querySelector('.b').append(...body);
+  const close = () => bg.remove();
+  bg.querySelector('.no').onclick = close;
+  bg.querySelector('.ok').onclick = () => { if (!onOk || onOk(close) !== false) close(); };
+  document.body.append(bg);
+  return close;
+}
+const mkInput = (ph, o = {}) => { const i = document.createElement(o.area ? 'textarea' : 'input'); i.placeholder = ph; if (o.num) i.setAttribute('inputmode', 'decimal'); if (o.val != null) i.value = o.val; if (o.area) i.rows = 2; return i; };
+
+/* ===== التخزين المحلي (مثل Store.kt): إعدادات + بيانات في localStorage، والصور في IndexedDB ===== */
+const jget = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } };
+let S = jget('fleet_s', {});
+let D = Object.assign({ points: [], invoices: [], deletions: [], trips: [] }, jget('fleet_d', {}));
+const saveS = () => localStorage.setItem('fleet_s', JSON.stringify(S));
+const saveD = () => localStorage.setItem('fleet_d', JSON.stringify(D));
+const PROFILE_KEYS = ['name', 'phone', 'carType', 'model', 'color', 'plate', 'vin'];
+const prof = k => S['p_' + k] || '';
+const configured = () => !!(S.uid && S.rt);
+const profileDone = () => PROFILE_KEYS.every(k => prof(k).trim()) && !!S.hasAvatar;
+const dirty = () => (S.rev || 0) > (S.srev || 0);
+const touch = () => { S.rev = (S.rev || 0) + 1; saveS(); };
+const pendingChanges = () => Math.max(0, (S.rev || 0) - (S.srev || 0));
+const pendingInvoices = () => D.invoices.filter(i => !i.up).length;
+const pendingDeletions = () => D.deletions.filter(i => !i.up).length;
+const activeTrip = () => [...D.trips].reverse().find(t => !t.endTime) || null;
+const allPts = () => [...D.points].sort((a, b) => a.time - b.time);
+
+const idb = new Promise((res, rej) => { const r = indexedDB.open('fleet', 1); r.onupgradeneeded = () => r.result.createObjectStore('img'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+const idbReq = (mode, fn) => idb.then(db => new Promise((res, rej) => { const q = fn(db.transaction('img', mode).objectStore('img')); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }));
+const imgGet = k => idbReq('readonly', s => s.get(k));
+const imgSet = (k, v) => idbReq('readwrite', s => s.put(v, k));
+const imgDel = k => idbReq('readwrite', s => s.delete(k));
+const imgClear = () => idbReq('readwrite', s => s.clear());
+const dataUrl = b64 => b64 ? 'data:image/jpeg;base64,' + b64 : '';
+
+/** تصغير الصورة (فاتورة: أطول ضلع 1280، جودة 65٪ — شخصية: مربع 256) مع احترام اتجاه EXIF */
+function toB64(file, { max = 1280, q = .65, square = 0 } = {}) {
+  return new Promise((res, rej) => {
+    const u = URL.createObjectURL(file), im = new Image();
+    im.onload = () => {
+      URL.revokeObjectURL(u);
+      let sw = im.naturalWidth, sh = im.naturalHeight, sx = 0, sy = 0, w, h;
+      if (square) { const s = Math.min(sw, sh); sx = (sw - s) / 2; sy = (sh - s) / 2; sw = sh = s; w = h = square; }
+      else { const k = Math.min(1, max / Math.max(sw, sh)); w = Math.round(sw * k); h = Math.round(sh * k); }
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').drawImage(im, sx, sy, sw, sh, 0, 0, w, h);
+      res(c.toDataURL('image/jpeg', q).split(',')[1]);
+    };
+    im.onerror = () => rej(new Error('تعذّر قراءة الصورة'));
+    im.src = u;
+  });
+}
+function pickImage(camera) {
+  return new Promise(res => {
+    const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*';
+    if (camera) i.setAttribute('capture', 'environment');
+    i.onchange = () => res(i.files[0] || null);
+    i.click();
+  });
+}
+
+/* ===== الاتصال بـ Firebase عبر REST (مثل Cloud.kt) ===== */
+async function call(method, url, body, ct) {
+  const r = await fetch(url, { method, headers: ct ? { 'Content-Type': ct } : {}, body: body ?? undefined });
+  const t = await r.text();
+  if (!r.ok) throw new Error('HTTP ' + r.status + ' ' + t);
+  return t;
+}
+const signIn = (email, password) => call('POST', `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`,
+  JSON.stringify({ email, password, returnSecureToken: true }), 'application/json').then(JSON.parse);
+const refreshToken = () => call('POST', `https://securetoken.googleapis.com/v1/token?key=${API_KEY}`,
+  'grant_type=refresh_token&refresh_token=' + encodeURIComponent(S.rt), 'application/x-www-form-urlencoded').then(t => JSON.parse(t).id_token);
+
+/* ===== المزامنة (مثل Syncer.kt) ===== */
+class Disabled extends Error {}
+let syncing = false, again = false, disabled = false, lastErr = '';
+
+async function doSync() {
+  const uid = S.uid, dels = D.deletions, invs = D.invoices;
+  const token = await refreshToken();
+  const dr = (await call('GET', `${DB_URL}/drivers/${uid}.json?auth=${token}`)).trim();
+  const d = dr === 'null' ? null : JSON.parse(dr);
+  if (!d || !d.active) throw new Disabled();
+  S.driverName = d.name || ''; S.vehicle = d.vehicle || ''; saveS();
+
+  // رحلات/فواتير حذفها المدير
+  try {
+    const rm = (await call('GET', `${DB_URL}/removed/${uid}.json?auth=${token}`)).trim();
+    if (rm !== 'null') await applyRemoved(new Set(Object.keys(JSON.parse(rm)).map(Number)));
+  } catch (e) { if (!/^HTTP 40[13]/.test(e.message)) throw e; }
+
+  // تقارير حذف النقاط أولاً
+  for (const o of dels) {
+    if (o.up) continue;
+    const url = `${DB_URL}/deletions/${uid}/${o.id}.json?auth=${token}`;
+    if ((await call('GET', url)).trim() === 'null') { const b = { ...o }; delete b.up; await call('PUT', url, JSON.stringify(b)); }
+    o.up = true; saveD();
+  }
+  // صورة السائق
+  const av = await imgGet('avatar');
+  if (av && !S.photoUp) { await call('PUT', `${DB_URL}/avatars/${uid}.json?auth=${token}`, JSON.stringify(av)); S.photoUp = true; saveS(); }
+
+  const pts = {}, trips = {}, invNode = {};
+  D.points.forEach(p => pts[p.id] = p);
+  D.trips.forEach(t => trips[t.id] = t);
+  for (const o of invs) {
+    const b = await imgGet('inv_' + o.id);
+    if (!o.up && b) { await call('PUT', `${DB_URL}/images/${uid}/${o.id}.json?auth=${token}`, JSON.stringify(b)); o.up = true; saveD(); }
+    invNode[o.id] = { id: o.id, note: o.note || '', amount: o.amount || '', time: o.time };
+  }
+  const profile = {}; PROFILE_KEYS.forEach(k => profile[k] = prof(k));
+  const node = { name: S.driverName, vehicle: S.vehicle, lastSync: Date.now(), photoTime: av ? (S.photoTime || 0) : 0, points: pts, trips, invoices: invNode, profile };
+  await call('PUT', `${DB_URL}/data/${uid}.json?auth=${token}`, JSON.stringify(node));
+}
+async function applyRemoved(ids) {
+  if (!ids.size) return;
+  const np = D.points.filter(p => !ids.has(p.tripId)), nt = D.trips.filter(t => !ids.has(t.id));
+  const gone = D.invoices.filter(o => ids.has(o.id)), ni = D.invoices.filter(o => !ids.has(o.id));
+  for (const o of gone) await imgDel('inv_' + o.id);
+  if (np.length !== D.points.length || nt.length !== D.trips.length || ni.length !== D.invoices.length) { D.points = np; D.trips = nt; D.invoices = ni; saveD(); }
+}
+async function syncNow(force) {
+  if (!force && !dirty()) return 'OK';
+  const rev0 = S.rev || 0;
+  try { await doSync(); S.srev = Math.max(S.srev || 0, rev0); S.lastSync = Date.now(); saveS(); disabled = false; return 'OK'; }
+  catch (e) { if (e instanceof Disabled) { disabled = true; return 'DISABLED'; } lastErr = e.message || String(e); return 'RETRY'; }
+}
+/** مزامنة واحدة في كل مرة؛ إن وصلت تعديلات أثناءها تُعاد مرة أخرى */
+async function runSync(force = true, cb) {
+  if (syncing) { again = true; cb && cb('مزامنة أخرى جارية، ستُرسل التعديلات تلقائياً'); return; }
+  syncing = true; let msg, f = force;
+  do {
+    again = false;
+    const r = await syncNow(f);
+    msg = r === 'OK' ? 'تمت المزامنة بنجاح ✓' : r === 'DISABLED' ? 'الحساب معطّل' : 'فشلت المزامنة: ' + lastErr;
+    f = false;
+  } while (again);
+  syncing = false; cb && cb(msg); refreshBanners();
+}
+/** بعد كل تعديل: يدخل الطابور ويُرسل فوراً إن أمكن، وإلا عند عودة الإنترنت/فتح التطبيق */
+function autoSync() {
+  if (!configured()) return;
+  touch();
+  runSync(false, m => toast(m.includes('✓') ? 'تمت المزامنة ✓' : m.includes('معطّل') ? 'الحساب معطّل، راجع المدير' : 'حُفظ على الهاتف وسيُرسل عند توفر الإنترنت'));
+}
+function kick() { if (configured() && dirty() && navigator.onLine) runSync(false); }
+addEventListener('online', kick);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') kick(); });
+setInterval(() => { if (document.visibilityState === 'visible') kick(); }, 30000);
+
+/* ===== شريط حالة الإرسال ===== */
+function bannerHTML() {
+  if (!configured()) return '';
+  if (disabled) return `<div class="banner bad" data-banner>⚠ الحساب معطّل — بياناتك محفوظة على الهاتف، راجع المدير</div>`;
+  if (dirty()) {
+    const inv = pendingInvoices(), del = pendingDeletions();
+    return `<div class="banner wait" data-banner>⏳ ${pendingChanges()} تعديل بانتظار الإرسال${inv ? ` — ${inv} فاتورة` : ''}${del ? ` — ${del} تقرير حذف` : ''}\nمحفوظة على الهاتف وتُرسل تلقائياً عند توفر الإنترنت</div>`;
+  }
+  return `<div class="banner ok" data-banner>✓ كل البيانات مرسلة${S.lastSync ? ` — آخر مزامنة ${timeStr(S.lastSync)}` : ''}</div>`;
+}
+function refreshBanners() { document.querySelectorAll('[data-banner]').forEach(b => { const t = document.createElement('div'); t.innerHTML = bannerHTML(); b.replaceWith(t.firstChild || document.createComment('')); }); }
+setInterval(refreshBanners, 2000);
+
+/* ===== التنقل ===== */
+let tab = 'trip', view = 'trip';
+const host = $('#host');
+function setChrome(on) { $('#header').style.display = on ? '' : 'none'; $('#nav').style.display = on ? '' : 'none'; }
+function go(v) {
+  if (!configured()) return showLogin();
+  if ((v === 'trip' || v === 'inv') && !profileDone()) v = 'profile';
+  view = v; if (v !== 'profile') tab = v;
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
+  host.scrollTop = 0;
+  ({ trip: renderTrip, inv: renderInv, sync: renderSync, profile: renderProfile })[v]();
+}
+document.querySelectorAll('#nav button').forEach(b => b.onclick = () => go(b.dataset.t));
+const page = html => { host.innerHTML = `<div class="holder"><div class="card">${bannerHTML()}${html}</div></div>`; return host.firstChild.firstChild; };
+
+/* ===== تسجيل الدخول ===== */
+function showLogin() { setChrome(false); $('#login').style.display = 'block'; }
+function hideLogin() { $('#login').style.display = 'none'; setChrome(true); }
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const standalone = navigator.standalone || matchMedia('(display-mode: standalone)').matches;
+if (isIOS && !standalone) $('#iosTip').style.display = 'block';
+$('#lshow').onchange = e => $('#lp').type = e.target.checked ? 'text' : 'password';
+$('#lp').onkeydown = e => { if (e.key === 'Enter') submitLogin(); };
+$('#lgo').onclick = submitLogin;
+
+async function performLogin(user, pw) {
+  try {
+    const r = await signIn(user.trim().toLowerCase() + '@fleet.local', pw);
+    const uid = r.localId, tok = r.idToken;
+    const dr = (await call('GET', `${DB_URL}/drivers/${uid}.json?auth=${tok}`)).trim();
+    if (dr === 'null') throw new Error('INACTIVE');
+    const d = JSON.parse(dr); if (!d.active) throw new Error('INACTIVE');
+    S.uid = uid; S.rt = r.refreshToken; S.username = user.trim(); S.driverName = d.name || ''; S.vehicle = d.vehicle || ''; saveS();
+    // استرجاع بيانات السائق وصورته إن أدخلها سابقاً
+    try {
+      const pr = (await call('GET', `${DB_URL}/data/${uid}/profile.json?auth=${tok}`)).trim();
+      if (pr !== 'null') { const j = JSON.parse(pr); PROFILE_KEYS.forEach(k => S['p_' + k] = j[k] || ''); }
+      const av = (await call('GET', `${DB_URL}/avatars/${uid}.json?auth=${tok}`)).trim();
+      if (av !== 'null' && !(await imgGet('avatar'))) { await imgSet('avatar', JSON.parse(av)); S.hasAvatar = true; S.photoUp = true; S.photoTime = Date.now(); }
+      saveS();
+    } catch {}
+    return null;
+  } catch (e) {
+    const m = e.message || '';
+    if (e instanceof TypeError) return 'تعذّر الاتصال بالإنترنت، تحقق من الشبكة';
+    if (m.includes('INVALID') || m.includes('EMAIL_NOT_FOUND')) return 'اسم المستخدم أو كلمة المرور غير صحيحة';
+    if (m.includes('INACTIVE')) return 'الحساب غير مفعّل، راجع المدير';
+    if (m.includes('TOO_MANY')) return 'محاولات كثيرة، حاول بعد قليل';
+    return 'تعذّر الدخول: ' + m;
+  }
+}
+async function submitLogin() {
+  const u = $('#lu').value, p = $('#lp').value, st = $('#lst'), btn = $('#lgo');
+  if (!u.trim() || !p) { st.textContent = 'أكمل كل الحقول'; return; }
+  st.textContent = ''; btn.disabled = true; btn.textContent = 'جارٍ الدخول...';
+  const err = await performLogin(u, p);
+  if (err) { st.textContent = err; btn.disabled = false; btn.textContent = 'تسجيل الدخول'; return; }
+  btn.disabled = false; btn.textContent = 'تسجيل الدخول'; $('#lp').value = '';
+  hideLogin(); go('trip'); runSync(true);
+}
+
+/* ===== تبويب الرحلة ===== */
+function confirmSave(odo, prev, ok) {
+  dlg({ title: 'تأكيد قراءة العداد', ok: 'حفظ', cancel: 'مراجعة', onOk: () => { ok(); },
+    msg: `القراءة: ${fmt(odo)} كم${prev != null ? `\nالمسافة منذ آخر قراءة: ${fmt(odo - prev)} كم` : ''}\n\nلا يمكن حذف النقطة. إن أخطأت يمكنك تصحيح العداد لاحقاً بسبب يصل للمدير، فتأكد من الرقم.` });
+}
+function editOdo(p) {
+  const pts = allPts(), idx = pts.findIndex(x => x.id === p.id);
+  const lo = pts[idx - 1]?.odo ?? null, hi = pts[idx + 1]?.odo ?? null, oldV = p.odo;
+  const et = mkInput('قراءة العداد الصحيحة', { num: 1, val: fmt(oldV) }), rs = mkInput('سبب التصحيح (إجباري)', { area: 1 });
+  const range = `من ${lo != null ? fmt(lo) : 'أي قيمة'} إلى ${hi != null ? fmt(hi) : 'أي قيمة'}`;
+  dlg({ title: 'تصحيح العداد: ' + p.name, msg: `القراءة الحالية: ${fmt(oldV)}\nالمسموح: ${range}\nيُرسل التصحيح للمدير مع السبب.`, body: [et, rs], ok: 'حفظ التصحيح',
+    onOk: () => {
+      et.classList.remove('err'); rs.classList.remove('err');
+      const v = num(et.value), r = rs.value.trim();
+      if (v == null) { et.classList.add('err'); toast('أدخل رقماً'); return false; }
+      if ((lo != null && v < lo) || (hi != null && v > hi)) { et.classList.add('err'); toast('يجب أن تكون ' + range); return false; }
+      if (v === oldV) return true;
+      if (r.length < 3) { rs.classList.add('err'); toast('اكتب سبب التصحيح'); return false; }
+      (p.editLog = p.editLog || []).push({ from: oldV, to: v, time: Date.now(), reason: r });
+      p.odo = v;
+      const t = D.trips.find(t => t.id === p.tripId);
+      if (t) { if (p.kind === 'start') t.startOdo = v; else if (p.kind === 'end') t.endOdo = v; }
+      afterTrip();
+    } });
+}
+function afterTrip() { saveD(); renderTrip(); autoSync(); }
+const mkPoint = (id, name, odo, kind, tripId) => ({ id, name, odo, time: id, kind, tripId });
+
+function pointRow(idx, p, prev, tripActive) {
+  const seg = prev ? Math.max(0, p.odo - prev.odo) : 0;
+  const icon = { start: '🟢 انطلاق', end: '🏁 نهاية', stop: '📍 توقف' }[p.kind] || '📍';
+  const extra = prev ? `  (+${fmt(seg)} كم)` : '';
+  let d = '';
+  if (p.kind === 'stop') {
+    if (p.leave > 0) d = `\n⏱ مدة التوقف: ${dur(p.leave - p.time)}`;
+    else if (tripActive) d = `\n⏱ متوقف حالياً منذ ${dur(Date.now() - p.time)}`;
+  }
+  return `<div class="pt" data-pt="${p.id}">${idx + 1}. ${icon} — ${esc(p.name)} — ${fmt(p.odo)}${p.editLog ? ' ✏' : ''}${extra}\n${timeStr(p.time)}${d}</div>`;
+}
+
+function renderTrip() {
+  const all = allPts(), trip = activeTrip(), now = Date.now();
+  const lastOdo = all.length ? all[all.length - 1].odo : null;
+  const hint = lastOdo != null ? `قراءة العداد (لا تقل عن ${fmt(lastOdo)})` : 'قراءة العداد (كم)';
+  let h = '';
+  if (!trip) {
+    h += `<div class="lbl b" style="font-size:20px">لا توجد رحلة جارية</div>
+      <input id="nm" placeholder="نقطة الانطلاق"><input id="od" inputmode="decimal" placeholder="${esc(hint)}">
+      <button class="btn" id="bStart">▶ بدء رحلة</button>`;
+  } else {
+    const tid = trip.id, tp = all.filter(p => p.tripId === tid);
+    const open = [...tp].reverse().find(p => p.kind === 'stop' && !p.leave);
+    h += `<div class="lbl b" style="font-size:20px">🚚 رحلة جارية</div>
+      <div class="lbl">بدأت ${timeStr(trip.startTime)} — مضى ${dur(now - trip.startTime)}</div>`;
+    if (open) h += `<div class="lbl b">أنت متوقف الآن في «${esc(open.name)}» منذ ${dur(now - open.time)}</div><button class="btn" id="bLeave">➡ مغادرة النقطة</button>`;
+    h += `<input id="nm" placeholder="اسم نقطة التوقف (أو نقطة النهاية)"><input id="od" inputmode="decimal" placeholder="${esc(hint)}">
+      <button class="btn" id="bStop">📍 تسجيل نقطة توقف</button><button class="btn" id="bEnd">🏁 إنهاء الرحلة</button>`;
+  }
+  // سجل الرحلات
+  const trips = [...D.trips].sort((a, b) => b.startTime - a.startTime);
+  for (const t of trips) {
+    const active = !t.endTime, tp = all.filter(p => p.tripId === t.id), stops = tp.filter(p => p.kind === 'stop');
+    const stopMs = stops.reduce((s, p) => s + ((p.leave > 0 ? p.leave : active ? now : p.time) - p.time), 0);
+    const endOdo = !active ? t.endOdo : (tp.length ? tp[tp.length - 1].odo : t.startOdo);
+    h += `<div class="lbl b" style="font-size:17px;padding-top:16px">— رحلة ${timeStr(t.startTime)} ${active ? '(جارية)' : ''}</div>
+      <div class="lbl" style="font-size:14px">المدة: ${dur((active ? now : t.endTime) - t.startTime)}   |   المسافة: ${fmt(Math.max(0, endOdo - t.startOdo))} كم\nالتوقفات: ${stops.length}   |   مجموع وقت التوقف: ${dur(stopMs)}</div>`;
+    tp.forEach((p, i) => h += pointRow(i, p, tp[i - 1], active));
+  }
+  const legacy = all.filter(p => !p.tripId);
+  if (legacy.length) { h += `<div class="lbl b" style="font-size:17px;padding-top:16px">— نقاط سابقة (بدون رحلة)</div>`; legacy.forEach((p, i) => h += pointRow(i, p, legacy[i - 1], false)); }
+  h += `<div class="lbl" style="font-size:12px">النقاط لا تُحذف. لتصحيح خطأ في العداد اضغط على النقطة (✏ = نقطة مصحّحة، والتصحيح يصل للمدير مع السبب). العداد لا يقل عن القراءة السابقة.</div>`;
+  const root = page(h);
+
+  root.querySelectorAll('[data-pt]').forEach(e => e.onclick = () => editOdo(D.points.find(p => p.id == e.dataset.pt)));
+  const valid = o => {
+    if (o == null) { toast('أدخل قراءة العداد'); return false; }
+    if (lastOdo != null && o < lastOdo) { toast(`القراءة (${fmt(o)}) أقل من آخر قراءة مسجّلة (${fmt(lastOdo)})`); return false; }
+    return true;
+  };
+  const val = () => ({ n: $('#nm').value.trim(), o: num($('#od').value) });
+  const on = (id, f) => { const b = root.querySelector(id); if (b) b.onclick = f; };
+  on('#bStart', () => {
+    const { n, o } = val();
+    if (!n || o == null) return toast('أدخل نقطة الانطلاق وقراءة العداد');
+    if (!valid(o)) return;
+    confirmSave(o, lastOdo, () => {
+      const t = Date.now();
+      D.trips.push({ id: t, startTime: t, startOdo: o, endTime: 0, endOdo: 0 });
+      D.points.push(mkPoint(t, n, o, 'start', t)); afterTrip();
+    });
+  });
+  on('#bLeave', () => { const open = [...all].reverse().find(p => p.tripId === trip.id && p.kind === 'stop' && !p.leave); if (open) open.leave = Date.now(); afterTrip(); });
+  on('#bStop', () => {
+    const { n, o } = val(); if (!valid(o)) return;
+    if (!n) return toast('أدخل اسم النقطة');
+    confirmSave(o, lastOdo, () => {
+      const t = Date.now(), open = [...all].reverse().find(p => p.tripId === trip.id && p.kind === 'stop' && !p.leave);
+      if (open) open.leave = t; // مغادرة النقطة السابقة تلقائياً
+      D.points.push(mkPoint(t + 1, n, o, 'stop', trip.id)); afterTrip();
+    });
+  });
+  on('#bEnd', () => {
+    const { n, o } = val(); if (!valid(o)) return;
+    confirmSave(o, lastOdo, () => {
+      const t = Date.now(), open = [...all].reverse().find(p => p.tripId === trip.id && p.kind === 'stop' && !p.leave);
+      if (open) open.leave = t;
+      D.points.push(mkPoint(t + 1, n || 'نهاية الرحلة', o, 'end', trip.id));
+      trip.endTime = t; trip.endOdo = o; afterTrip();
+    });
+  });
+}
+
+/* ===== تبويب الفواتير ===== */
+async function renderInv() {
+  const root = page(`<div class="lbl b" style="font-size:20px">فاتورة جديدة</div>
+    <input id="note" placeholder="ملاحظة (مثال: وقود، صيانة)"><input id="amt" inputmode="decimal" placeholder="المبلغ">
+    <button class="btn" id="bCam">📷 تصوير الفاتورة</button><button class="btn" id="bGal">🖼 اختيار من المعرض</button><div id="list"></div>`);
+  const add = async f => {
+    if (!f) return;
+    try {
+      const b64 = await toB64(f), id = Date.now();
+      await imgSet('inv_' + id, b64);
+      D.invoices.push({ id, note: $('#note').value.trim(), amount: $('#amt').value.trim(), time: id, file: 'inv_' + id });
+      saveD(); $('#note').value = ''; $('#amt').value = ''; drawList(); autoSync();
+    } catch (e) { toast(e.message); }
+  };
+  root.querySelector('#bCam').onclick = async () => add(await pickImage(true));
+  root.querySelector('#bGal').onclick = async () => add(await pickImage(false));
+  async function drawList() {
+    const list = root.querySelector('#list'); let h = '';
+    for (const o of [...D.invoices].reverse()) {
+      const b = await imgGet('inv_' + o.id);
+      h += `<div class="inv"><img src="${dataUrl(b)}" alt=""><div class="tx">${esc(o.note)}\nالمبلغ: ${esc(o.amount)}\n${timeStr(o.time)}</div><button class="del" data-id="${o.id}">🗑</button></div>`;
+    }
+    list.innerHTML = h;
+    list.querySelectorAll('.del').forEach(btn => btn.onclick = () => dlg({ msg: 'حذف هذه الفاتورة؟', ok: 'حذف',
+      onOk: async () => { const id = +btn.dataset.id; await imgDel('inv_' + id); D.invoices = D.invoices.filter(i => i.id !== id); saveD(); drawList(); autoSync(); } }));
+  }
+  drawList();
+}
+
+/* ===== بيانات السائق والمركبة ===== */
+async function renderProfile() {
+  const F = [['name', 'الاسم الكامل'], ['phone', 'رقم الهاتف'], ['carType', 'نوع السيارة (مثال: تويوتا هايلكس)'], ['model', 'الموديل (سنة الصنع)'], ['color', 'لون السيارة'], ['plate', 'رقم المركبة (اللوحة)'], ['vin', 'رقم الشاصي']];
+  const av = await imgGet('avatar');
+  const root = page(`<div class="lbl b" style="font-size:20px">بيانات السائق والمركبة</div>
+    ${profileDone() ? '' : '<div class="lbl" style="font-size:14px">أكمل البيانات التالية للمتابعة (إجباري)</div>'}
+    ${F.map(([k, ph]) => `<input data-k="${k}" placeholder="${esc(ph)}" value="${esc(prof(k) || (k === 'name' ? S.driverName : '') || '')}" ${k === 'phone' ? 'type="tel"' : ''}>`).join('')}
+    <div class="lbl b">الصورة الشخصية</div>
+    <img id="pv" class="avatar" src="${dataUrl(av)}" style="${av ? '' : 'display:none'}" alt="">
+    <button class="btn" id="bCam">📷 التقاط صورتي</button><button class="btn" id="bGal">🖼 اختيار صورتي من المعرض</button>
+    <button class="btn" id="bSave">حفظ ومتابعة</button>`);
+  const setAv = async f => { if (!f) return; try { await saveAvatar(f); $('#pv').src = dataUrl(await imgGet('avatar')); $('#pv').style.display = 'block'; } catch (e) { toast(e.message); } };
+  root.querySelector('#bCam').onclick = async () => setAv(await pickImage(true));
+  root.querySelector('#bGal').onclick = async () => setAv(await pickImage(false));
+  root.querySelector('#bSave').onclick = () => {
+    const ins = [...root.querySelectorAll('[data-k]')];
+    ins.forEach(i => i.classList.remove('err'));
+    for (const i of ins) if (!i.value.trim()) { i.classList.add('err'); i.focus(); return toast('مطلوب'); }
+    if (!S.hasAvatar) return toast('التقط صورتك الشخصية أو اخترها');
+    ins.forEach(i => S['p_' + i.dataset.k] = i.value.trim()); saveS();
+    autoSync(); toast('تم حفظ البيانات ✓'); go('trip');
+  };
+}
+async function saveAvatar(f) {
+  const b64 = await toB64(f, { square: 256, q: .8 });
+  await imgSet('avatar', b64); S.hasAvatar = true; S.photoTime = Date.now(); S.photoUp = false; saveS();
+}
+
+/* ===== تبويب الحساب والمزامنة ===== */
+async function renderSync() {
+  const av = await imgGet('avatar');
+  const root = page(`<div class="lbl b" style="font-size:20px">الحساب</div>
+    ${av ? `<img id="pv" class="avatar" style="width:96px;height:96px" src="${dataUrl(av)}" alt="">` : ''}
+    <button class="btn" id="bCam">📷 التقاط صورتي</button><button class="btn" id="bGal">🖼 اختيار صورتي من المعرض</button>
+    <button class="btn" id="bProf">✏ بيانات السائق والمركبة</button>
+    <div class="lbl" style="font-size:17px">السائق: ${esc(S.driverName)}</div>
+    <div class="lbl" style="font-size:17px">المركبة: ${esc(S.vehicle || 'غير محددة')}</div>
+    <div class="lbl" style="font-size:15px">اسم المستخدم: ${esc(S.username)}</div>
+    <button class="btn" id="bSync">مزامنة الآن</button><button class="btn" id="bOut">تسجيل الخروج</button>
+    <div class="lbl" id="stat"></div>
+    <div class="lbl" style="font-size:13px">يعمل التطبيق بدون إنترنت: كل شيء يُحفظ على الهاتف ويُرسل تلقائياً عند توفر الاتصال. على الآيفون يتم الإرسال أثناء فتح التطبيق، فافتحه مرة بعد عودة الإنترنت للتأكد من وصول كل البيانات.</div>`);
+  const stat = root.querySelector('#stat');
+  const setAv = async f => { if (!f) return; try { await saveAvatar(f); autoSync(); renderSync(); } catch (e) { toast(e.message); } };
+  root.querySelector('#bCam').onclick = async () => setAv(await pickImage(true));
+  root.querySelector('#bGal').onclick = async () => setAv(await pickImage(false));
+  root.querySelector('#bProf').onclick = () => go('profile');
+  root.querySelector('#bSync').onclick = () => { stat.textContent = 'جارٍ المزامنة...'; runSync(true, m => stat.textContent = m); };
+  root.querySelector('#bOut').onclick = () => dlg({ msg: 'ستُرسل بياناتك أولاً ثم تُحذف من هذا الهاتف. متابعة؟', ok: 'خروج',
+    onOk: () => { stat.textContent = 'جارٍ المزامنة قبل الخروج...';
+      runSync(true, async m => { if (m.includes('✓')) await logout(); else stat.textContent = 'لم يتم الخروج: ' + m; }); } });
+}
+async function logout() {
+  await imgClear(); localStorage.removeItem('fleet_s'); localStorage.removeItem('fleet_d');
+  S = {}; D = { points: [], invoices: [], deletions: [], trips: [] }; disabled = false; showLogin();
+}
+
+/* ===== تشغيل ===== */
+if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+if (configured()) { hideLogin(); go('trip'); kick(); } else showLogin();
+</script>
+</body>
+</html>
