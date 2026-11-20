@@ -1,0 +1,1291 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>Agrimatco - Fleet</title>
+<style>
+body{font-family:Segoe UI,Tahoma,sans-serif;margin:0;background:#f4f6f8;color:#222}
+header{background:#0a8f4b;color:#fff;padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
+nav{display:flex;background:#fff;border-bottom:1px solid #ddd}
+nav button{flex:1;padding:12px;border:0;background:none;font-size:16px;cursor:pointer}
+nav button.on{border-bottom:3px solid #0a8f4b;color:#0a8f4b;font-weight:bold}
+main{padding:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.card{background:#fff;border-radius:10px;padding:14px;box-shadow:0 1px 4px #0002;margin-bottom:14px}
+.grid .card{margin:0}
+.card.click{cursor:pointer}
+.big{font-size:26px;font-weight:bold;color:#0a8f4b}
+table{width:100%;border-collapse:collapse;background:#fff}
+td,th{padding:8px;border-bottom:1px solid #eee;text-align:right}
+th{background:#eef2f7}
+input{padding:8px;font-size:15px;margin-bottom:10px;width:100%;box-sizing:border-box}
+td input{margin:0}
+select{padding:8px;font-size:15px;margin-bottom:12px}
+.form{max-width:560px}
+button.p{padding:8px 16px;font-size:14px;background:#0a8f4b;color:#fff;border:0;border-radius:6px;cursor:pointer;margin-left:6px}
+button.r{background:#c62828}
+.msg{margin:8px 0;color:#c62828}.ok{color:#2e7d32}
+.off{opacity:.5}
+img{max-width:100%;border-radius:6px;cursor:pointer;min-height:60px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:#fff;border-radius:10px;padding:12px;box-shadow:0 1px 4px #0002}
+.kpi small{color:#666}.kpi .v{font-size:22px;font-weight:bold;color:#0a8f4b}
+.up{color:#c62828}.dn{color:#2e7d32}.eq{color:#666}
+.hb{display:flex;align-items:center;gap:8px;margin:6px 0}
+.hb .l{width:110px;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .t{flex:1;background:#eef2f7;border-radius:6px;height:22px;overflow:hidden}
+.hb .f{height:100%;background:#0a8f4b;border-radius:6px;min-width:2px}
+.hb .n{width:90px;font-size:13px;color:#444}
+.cols{display:flex;align-items:flex-end;gap:10px;height:190px;padding-top:20px}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.col .b{width:70%;max-width:46px;background:#0a8f4b;border-radius:6px 6px 0 0;min-height:2px}
+.col .b.cur{background:#f9a825}
+.col .n{font-size:12px;color:#333;margin-bottom:3px}
+.col .m{font-size:12px;color:#666;margin-top:4px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.bar select{margin:0}
+@media print{header,nav,.noprint{display:none!important}body{background:#fff}main{padding:0}.card{box-shadow:none;border:1px solid #ccc}}
+.bar input{margin:0;width:auto}
+.chip{display:inline-block;background:#e3f6ea;color:#05643a;border-radius:14px;padding:3px 10px;margin:3px;font-size:13px}
+.pg{background:#eef2f7;border-radius:6px;height:12px;overflow:hidden;margin:6px 0}
+.pg div{height:100%;border-radius:6px}
+.st-ok{color:#2e7d32}.st-soon{color:#ef6c00}.st-late{color:#c62828}
+.mi{border-top:1px solid #eee;padding:10px 0}
+.nb{background:#c62828;color:#fff;border-radius:10px;padding:0 7px;font-size:12px;margin-right:4px}
+nav button{font-size:14px;padding:12px 4px}
+.av{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;object-fit:cover;background:#cfd8dc;vertical-align:middle;margin-left:6px;font-size:20px}
+img.av{min-height:0;max-width:none}
+details.day{background:#fff;border-radius:8px;box-shadow:0 1px 3px #0002;margin:8px 0}
+details.day summary{padding:10px 12px;cursor:pointer;font-weight:bold;display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+details.day summary small{font-weight:normal;color:#555}
+details.day .bd{padding:0 12px 12px}
+.nw{border-right:6px solid #9e9e9e}.nw.n-mv{border-color:#2e7d32}.nw.n-sp{border-color:#ef6c00}.nw.n-wr{border-color:#c62828}.nw.n-dn{border-color:#0a8f4b}
+.nw .tl{font-size:13px;color:#444;margin-top:6px;line-height:1.7}
+.al{background:#fdecea;border-right:5px solid #c62828;border-radius:8px;padding:10px 14px;margin-bottom:14px}
+#ov{display:none;position:fixed;inset:0;background:#000c;align-items:center;justify-content:center}
+#ov img{max-height:92vh;max-width:92vw}
+
+/* ===== Agrimatco - Fleet : تصميم احترافي مجسّم ===== */
+:root{--g1:#17b865;--g2:#0a8f4b;--g3:#05643a;--ink:#10241a}
+body{font-family:'Segoe UI',Tahoma,sans-serif;color:var(--ink);min-height:100vh;
+  background:radial-gradient(1100px 480px at 85% -8%,#d3f0df 0,transparent 62%),linear-gradient(180deg,#eef3f0,#e2eae5);background-attachment:fixed}
+header.top{background:linear-gradient(135deg,#0a3a22 0%,#05643a 48%,#0a8f4b 100%);padding:10px 24px;position:relative;z-index:5;
+  box-shadow:0 8px 20px #05301c66,inset 0 1px 0 #ffffff40,inset 0 -3px 0 #00000026}
+.brand{display:flex;align-items:center;gap:16px}
+.brand h1{margin:0;font-size:24px;letter-spacing:.6px;direction:ltr;text-align:left;text-shadow:0 2px 3px #0007}
+.brand small{display:block;opacity:.88;font-size:12px;margin-top:2px}
+.logo3d{width:60px;height:60px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#fff,#e9efeb);padding:4px;
+  box-shadow:0 8px 16px #0008,0 0 0 3px #ffffff59,inset 0 -5px 9px #0003;transform:perspective(320px) rotateY(-14deg);transition:transform .45s}
+.logo3d:hover{transform:perspective(320px) rotateY(14deg) scale(1.07)}
+.logo3d img{width:100%;height:100%;min-height:0;border-radius:50%;cursor:default;display:block}
+header.top #st{background:#00000030;border-radius:20px;padding:4px 14px;box-shadow:inset 0 2px 4px #0005}
+nav{gap:7px;padding:10px 12px 8px;border:0;background:linear-gradient(#ffffff,#eef3f0);box-shadow:0 6px 14px -4px #0a3d2455;position:relative;z-index:4}
+nav button{border:0;border-radius:11px;color:#2c3e34;font-weight:600;background:linear-gradient(#fff,#e9efeb);
+  box-shadow:0 3px 0 #c5d3ca,0 6px 9px #0a3d2422,inset 0 1px 0 #fff;transition:transform .12s,box-shadow .12s;margin-bottom:3px}
+nav button:hover{transform:translateY(-2px);box-shadow:0 5px 0 #c5d3ca,0 10px 14px #0a3d2430,inset 0 1px 0 #fff}
+nav button:active{transform:translateY(2px);box-shadow:0 1px 0 #c5d3ca}
+nav button.on{border:0;color:#fff;background:linear-gradient(#1ac56d,#0a8f4b 55%,#07743c);
+  box-shadow:0 3px 0 #05643a,0 8px 14px #0a8f4b66,inset 0 1px 0 #ffffff66;text-shadow:0 1px 2px #0005}
+main{padding:22px}
+.card{border-radius:15px;border:1px solid #ffffffb0;background:linear-gradient(180deg,#fff,#f6faf8);
+  box-shadow:0 1px 0 #fff inset,0 2px 4px #0a3d2414,0 14px 26px -12px #0a3d2466;transition:transform .2s,box-shadow .2s}
+.grid .card:hover,.card.click:hover{transform:translateY(-4px);box-shadow:0 1px 0 #fff inset,0 3px 6px #0a3d2420,0 22px 32px -12px #0a3d2477}
+.card h2,.card h3{color:var(--g3)}
+.big{color:var(--g2);text-shadow:0 1px 0 #fff}
+.kpi{border-radius:15px;background:linear-gradient(150deg,#fff,#e8f5ee);border-bottom:4px solid var(--g2);
+  box-shadow:0 1px 0 #fff inset,0 2px 0 #cfe3d7,0 12px 20px -8px #0a3d2466}
+.kpi .v{color:var(--g3);text-shadow:0 1px 0 #fff}
+button.p{background:linear-gradient(#1ac56d,#0a8f4b 60%,#07743c);border-radius:10px;font-weight:600;padding:9px 18px;margin-bottom:5px;
+  text-shadow:0 1px 2px #0004;position:relative;top:0;box-shadow:0 4px 0 #05643a,0 9px 14px #0a3d2440,inset 0 1px 0 #ffffff66;transition:top .08s,box-shadow .08s,filter .15s}
+button.p:hover{filter:brightness(1.08)}
+button.p:active{top:3px;box-shadow:0 1px 0 #05643a,0 3px 5px #0a3d2440}
+button.p.r{background:linear-gradient(#ee4a47,#c62828 60%,#a91d1d);box-shadow:0 4px 0 #861616,0 9px 14px #5a0e0e40,inset 0 1px 0 #ffffff55}
+button.p.r:active{box-shadow:0 1px 0 #861616}
+input,select,textarea{border:1px solid #c3d3c9;border-radius:10px;background:#fbfdfc;box-shadow:inset 0 2px 5px #0a3d2420;outline:0;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--g2);box-shadow:inset 0 2px 5px #0a3d2420,0 0 0 3px #0a8f4b33}
+table{border-radius:12px;overflow:hidden;box-shadow:0 2px 0 #fff inset,0 8px 18px -8px #0a3d2455}
+th{background:linear-gradient(#ecf7f1,#d6ebdf);color:var(--g3);border-bottom:2px solid #0a8f4b55}
+tbody tr:hover td,tr:hover>td{background:#f2faf6}
+.hb .t{box-shadow:inset 0 2px 4px #0a3d2428;background:#e3ece7}
+.hb .f{background:linear-gradient(180deg,#34d684,#0a8f4b 55%,#05643a);box-shadow:inset 0 2px 0 #ffffff59,0 2px 4px #0a3d2440}
+.col .b{background:linear-gradient(90deg,#05643a,#1ec772 42%,#0a8f4b 62%,#05643a);box-shadow:4px 0 8px #0a3d2440,inset 0 3px 0 #ffffff66}
+.col .b.cur{background:linear-gradient(90deg,#b37000,#ffcd4d 42%,#f9a825 62%,#b37000)}
+.chip{box-shadow:0 2px 0 #bfe4cd;font-weight:600}
+.av{box-shadow:0 3px 6px #0004,0 0 0 2px #fff}
+details.day{box-shadow:0 2px 0 #fff inset,0 8px 16px -8px #0a3d2455}
+.nw{box-shadow:0 8px 16px -8px #0a3d2455}
+.al{box-shadow:0 8px 16px -8px #c6282866}
+.phead,.pfoot,.pmark{display:none}
+@media print{
+  @page{size:A4;margin:12mm 10mm 12mm}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{background:#fff;min-height:0}
+  header.top,nav{display:none!important}
+  .pwrap{display:table;width:100%}
+  .pth{display:table-header-group}.ptb{display:table-row-group}.ptf{display:table-footer-group}
+  .phead{display:flex;height:20mm;align-items:center;gap:12px;border-bottom:3px solid #0a8f4b;padding-bottom:3px;margin-bottom:5mm;background:#fff}
+  .phead img{width:18mm;height:18mm;min-height:0;border-radius:0}
+  .phead b{font-size:21px;direction:ltr;color:#05643a;letter-spacing:.5px}
+  .phead small{margin-right:auto;color:#555;font-size:12px}
+  .pfoot{display:block;text-align:center;font-size:11px;color:#666;border-top:1px solid #bbb;padding-top:3px;margin-top:5mm}
+  .pmark{display:block;position:fixed;top:50%;left:50%;width:120mm;height:120mm;margin:-60mm 0 0 -60mm;opacity:.06;z-index:-1}
+  .pmark img{width:100%;min-height:0;border-radius:0}
+  .card,.kpi{background:#fff;box-shadow:none;border:1px solid #ccc;transform:none}
+  table{box-shadow:none;overflow:visible}
+  tr{break-inside:avoid}
+  thead{display:table-header-group}
+}
+body.pdfmode .pth,body.pdfmode .ptf{display:none!important}
+
+/* ===== شاشة دخول المدير ===== */
+#gate{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;flex-direction:column;overflow:auto;padding:24px;box-sizing:border-box;
+  background:radial-gradient(900px 520px at 12% 8%,#1b9a5c 0,transparent 60%),radial-gradient(820px 520px at 92% 96%,#0f7443 0,transparent 60%),linear-gradient(135deg,#052619,#0a3d24 52%,#04301b)}
+body.locked #gate{display:flex}
+body.locked>:not(#gate){display:none!important}
+#gate .gbg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+#gate .gbg i{position:absolute;border-radius:50%;filter:blur(2px);background:radial-gradient(circle at 30% 30%,#ffffff26,#ffffff05 70%);animation:gfloat 16s ease-in-out infinite}
+#gate .gbg i:nth-child(1){width:340px;height:340px;top:-90px;left:-70px}
+#gate .gbg i:nth-child(2){width:230px;height:230px;bottom:-60px;right:8%;animation-delay:-5s}
+#gate .gbg i:nth-child(3){width:140px;height:140px;top:22%;right:-40px;animation-delay:-9s}
+@keyframes gfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-26px)}}
+#gate .gcard{position:relative;width:min(430px,94vw);box-sizing:border-box;padding:34px 34px 24px;border-radius:22px;text-align:center;
+  background:linear-gradient(180deg,#fff,#f4f9f6);box-shadow:0 30px 60px -16px #000a,0 0 0 1px #ffffff55,inset 0 1px 0 #fff;animation:gin .55s cubic-bezier(.2,.8,.2,1)}
+#gate .gcard::before{content:"";position:absolute;top:0;right:26px;left:26px;height:5px;border-radius:0 0 8px 8px;background:linear-gradient(90deg,#05643a,#1ac56d,#05643a)}
+@keyframes gin{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
+#gate .gcard.shake{animation:gshake .45s}
+@keyframes gshake{20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+#gate .glogo{width:96px;height:96px;margin:6px auto 12px;border-radius:50%;padding:5px;box-sizing:border-box;background:radial-gradient(circle at 30% 25%,#fff,#e6eee9);
+  box-shadow:0 12px 22px -6px #05301c99,0 0 0 4px #0a8f4b33,inset 0 -6px 10px #0002}
+#gate .glogo img{width:100%;height:100%;min-height:0;border-radius:50%;cursor:default;display:block}
+#gate h1{margin:0;font-size:27px;letter-spacing:.6px;color:#05643a;direction:ltr}
+#gate .gsub{margin:4px 0 0;color:#5b6f64;font-size:13px}
+#gate .gdiv{display:flex;align-items:center;gap:10px;margin:20px 0 16px;color:#05643a;font-weight:700;font-size:15px}
+#gate .gdiv::before,#gate .gdiv::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,#b9d3c5,transparent)}
+#gate label{display:block;text-align:right;font-size:13px;font-weight:600;color:#2c3e34;margin:0 2px 6px}
+#gate .gfield{position:relative;margin-bottom:14px}
+#gate .gfield input{width:100%;box-sizing:border-box;margin:0;height:50px;padding:0 46px 0 48px;font-size:16px;border-radius:12px;border:1.5px solid #c3d3c9;background:#fbfdfc;color:var(--ink);
+  box-shadow:inset 0 2px 5px #0a3d2420;outline:0;transition:border-color .15s,box-shadow .15s}
+#gate .gfield input:focus{border-color:#0a8f4b;box-shadow:inset 0 2px 5px #0a3d2420,0 0 0 4px #0a8f4b2e}
+#gate .gfield input.ltr{direction:ltr;text-align:left;padding:0 14px;font-size:14px}
+#gate .gfield .ic{position:absolute;top:50%;right:15px;transform:translateY(-50%);width:20px;height:20px;color:#0a8f4b;pointer-events:none}
+#gate .eye{position:absolute;top:50%;left:8px;transform:translateY(-50%);width:36px;height:36px;border:0;background:none;border-radius:9px;cursor:pointer;color:#6b8076;display:flex;align-items:center;justify-content:center}
+#gate .eye:hover{background:#0a8f4b14;color:#05643a}
+#gate .eye svg{width:20px;height:20px}
+#gate .gcaps{display:flex;align-items:center;gap:6px;margin:-4px 0 10px;font-size:12.5px;color:#a15c00;background:#fff4e0;border-radius:8px;padding:6px 10px}
+#gate .gerr{min-height:20px;margin:0 0 10px;font-size:13.5px;font-weight:600;color:#c62828}
+#gate .gbtn{width:100%;height:52px;border:0;border-radius:13px;cursor:pointer;font:700 17px 'Segoe UI',Tahoma,sans-serif;color:#fff;position:relative;top:0;
+  display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(#1ac56d,#0a8f4b 58%,#07743c);text-shadow:0 1px 2px #0004;
+  box-shadow:0 5px 0 #05643a,0 12px 18px #0a3d2440,inset 0 1px 0 #ffffff66;transition:top .08s,box-shadow .08s,filter .15s}
+#gate .gbtn:hover{filter:brightness(1.07)}
+#gate .gbtn:active{top:4px;box-shadow:0 1px 0 #05643a,0 4px 6px #0a3d2440}
+#gate .gbtn:disabled{cursor:not-allowed;filter:grayscale(.45) brightness(.95)}
+#gate .gbtn .spin{display:none;width:18px;height:18px;border-radius:50%;border:3px solid #ffffff55;border-top-color:#fff;animation:gspin .7s linear infinite}
+#gate .gbtn.busy .spin{display:block}
+@keyframes gspin{to{transform:rotate(360deg)}}
+#gate .glinks{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;margin-top:18px;font-size:13px}
+#gate .glinks a{color:#0a8f4b;cursor:pointer;font-weight:600;text-decoration:none}
+#gate .glinks a:hover{text-decoration:underline;color:#05643a}
+#gate .gcfg{background:#eef6f1;border-radius:12px;padding:12px 12px 2px;margin-bottom:14px;text-align:right}
+#gate .gcfg small{display:block;color:#5b6f64;margin:-2px 0 10px;font-size:12px}
+#gate .gfoot{position:relative;margin-top:20px;color:#ffffffb3;font-size:12px;text-align:center;text-shadow:0 1px 2px #0006}
+#gate [hidden]{display:none!important}
+.lockbtn{border:0;border-radius:20px;padding:6px 16px;font:600 13px 'Segoe UI',Tahoma,sans-serif;color:#fff;cursor:pointer;background:#ffffff26;box-shadow:inset 0 1px 0 #ffffff40,0 2px 5px #0004;transition:background .15s}
+.lockbtn:hover{background:#ffffff3d}
+header.top .hr{display:flex;align-items:center;gap:12px}
+
+.tabsel{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin:10px 0 12px}
+.tabsel label{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:10px;background:#f1f6f3;border:1px solid #d5e3db;cursor:pointer;font-weight:600;color:#2c3e34;user-select:none}
+.tabsel label:hover{background:#e6f3ec}
+.tabsel input{width:18px;height:18px;margin:0;padding:0;accent-color:#0a8f4b;box-shadow:none;cursor:pointer}
+.tabsel label.fixed{opacity:.6;cursor:not-allowed}
+.tabsel label.fixed input{cursor:not-allowed}
+
+.selbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:#fff;border-radius:12px;padding:10px 14px;margin:0 0 12px;box-shadow:0 2px 0 #fff inset,0 8px 16px -10px #0a3d2466;border-right:5px solid #0a8f4b}
+.selbar label{display:flex;align-items:center;gap:8px;font-weight:600;cursor:pointer;user-select:none}
+.selbar .selcnt{color:#5b6f64;font-size:13px}
+.selbar button{margin:0 auto 0 0}
+.selbar button:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.4)}
+input.sel,input.selall{width:20px;height:20px;margin:0;padding:0;accent-color:#c62828;cursor:pointer;box-shadow:none;flex:none}
+.card.pk{outline:3px solid #c62828;outline-offset:-3px;background:linear-gradient(180deg,#fff5f5,#fdeaea)}
+tr.pk>td{background:#fdeaea!important}
+.selpos{position:absolute;top:10px;left:10px;z-index:2;background:#fff;border-radius:8px;padding:5px;box-shadow:0 2px 6px #0004;display:flex}
+
+#dlg{display:none;position:fixed;inset:0;z-index:10000;background:#05140ccc;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;backdrop-filter:blur(3px)}
+#dlg.on{display:flex}
+#dlg .db{width:min(440px,94vw);background:linear-gradient(180deg,#fff,#f4f9f6);border-radius:18px;padding:24px 24px 18px;box-shadow:0 30px 60px -14px #000a,0 0 0 1px #ffffff55;animation:gin .25s ease-out;border-top:5px solid #0a8f4b}
+#dlg .db.danger{border-top-color:#c62828}
+#dlg .dm{white-space:pre-line;line-height:1.8;font-size:16px;color:#10241a;margin:0 0 18px}
+#dlg .dbt{display:flex;gap:10px;justify-content:flex-start}
+#dlg .dbt button{margin:0;min-width:110px}
+#dlg .dbt .cn{background:linear-gradient(#fff,#e9efeb);color:#2c3e34;text-shadow:none;box-shadow:0 4px 0 #c5d3ca,0 9px 14px #0a3d2420,inset 0 1px 0 #fff}
+
+.crtbl td{vertical-align:middle}
+.crtbl .pwv{font-family:Consolas,monospace;direction:ltr;display:inline-block;min-width:110px;text-align:left;letter-spacing:1px}
+.crtbl button{margin:2px}
+.crnote{color:#a15c00;background:#fff4e0;border-radius:8px;padding:6px 10px;margin:8px 0;font-size:12.5px}
+</style></head><body class="locked">
+<div id="gate">
+  <div class="gbg"><i></i><i></i><i></i></div>
+  <div class="gcard" id="gcard">
+    <div class="glogo"><img src="assets/logo.png" alt="Agrimatco"></div>
+    <h1>Agrimatco - Fleet</h1>
+    <p class="gsub">نظام متابعة المركبات والسائقين</p>
+    <div class="gdiv"><span id="gtitle">تسجيل دخول المدير</span></div>
+
+    <div class="gcfg" id="gcfgBox" hidden>
+      <small>بيانات الاتصال بقاعدة البيانات (تُدخل مرة واحدة فقط)</small>
+      <label for="gapi">Web API Key</label>
+      <div class="gfield"><input id="gapi" class="ltr" autocomplete="off" spellcheck="false"></div>
+      <label for="gdb">رابط قاعدة البيانات</label>
+      <div class="gfield"><input id="gdb" class="ltr" autocomplete="off" spellcheck="false" placeholder="https://xxxx.firebasedatabase.app"></div>
+    </div>
+
+    <label for="gemail">بريد المدير</label>
+    <div class="gfield"><input id="gemail" class="ltr" type="email" autocomplete="username" spellcheck="false" placeholder="admin@fleet.local"></div>
+
+    <label for="gpw">كلمة مرور المدير</label>
+    <div class="gfield"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      <input id="gpw" type="password" autocomplete="current-password" placeholder="أدخل كلمة المرور">
+      <button type="button" class="eye" id="geye" title="إظهار / إخفاء"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+    </div>
+    <div id="gpw2wrap" hidden>
+      <label for="gpw2">تأكيد كلمة المرور</label>
+      <div class="gfield"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><input id="gpw2" type="password" autocomplete="new-password" placeholder="أعد كتابة كلمة المرور"></div>
+    </div>
+    <div class="gcaps" id="gcaps" hidden>⚠ زر Caps Lock مفعّل</div>
+    <div class="gerr" id="gerr" role="alert"></div>
+    <button type="button" class="gbtn" id="gbtn"><i class="spin"></i><span id="gbtnTxt">دخول</span></button>
+    <div class="glinks"><a id="glForgot">نسيت كلمة المرور؟</a><a id="glCfg">⚙ إعدادات الاتصال</a><a id="glNew">أول استخدام؟ إنشاء حساب المدير</a></div>
+  </div>
+  <div class="gfoot">© Agrimatco — جميع الحقوق محفوظة &nbsp;|&nbsp; v1.2.0</div>
+</div>
+
+<div class="pmark"><img src="assets/logo.png" alt=""></div>
+<header class="top">
+  <div class="brand">
+    <div class="logo3d"><img src="assets/logo.png" alt="Agrimatco"></div>
+    <div><h1>Agrimatco - Fleet</h1><small>نظام متابعة المركبات والسائقين</small></div>
+  </div>
+  <div class="hr"><small id="st"></small><button type="button" class="lockbtn" id="lk">🔒 تسجيل الخروج</button></div>
+</header>
+<nav>
+  <button data-t="now" class="on">اليوم الآن</button>
+  <button data-t="cars">السائقون</button>
+  <button data-t="stats">الإحصائيات</button>
+  <button data-t="trips">الرحلات اليومية</button>
+  <button data-t="mnt">الصيانة</button>
+  <button data-t="del">الحذف والتصحيح</button>
+  <button data-t="rep">التقارير</button>
+  <button data-t="det">التفاصيل</button>
+  <button data-t="inv">الفواتير</button>
+  <button data-t="drv">إدارة السائقين</button>
+  <button data-t="set">الإعدادات</button>
+</nav>
+<div class="pwrap">
+<div class="pth"><div class="phead"><img src="assets/logo.png" alt=""><b>Agrimatco - Fleet</b><small>نظام متابعة المركبات — <span id="pdate"></span></small></div></div>
+<div class="ptb"><main id="m"></main></div>
+<div class="ptf"><div class="pfoot">Agrimatco - Fleet</div></div>
+</div>
+<div id="ov" onclick="this.style.display='none'"><img id="ovi"></div>
+<script>
+const DEFAULT_ADMIN = 'admin@fleet.local';
+let ADMIN = localStorage.getItem('adminEmail') || DEFAULT_ADMIN; // بريد المدير (يمكن أن يكون بريداً حقيقياً)
+let cfg = {}; try { cfg = JSON.parse(localStorage.getItem('cfg') || '{}'); } catch {}
+let D = [], sel = '', last = '', tok = null, tokExp = 0, flash = '';
+let tab = (cfg.api && cfg.db && localStorage.getItem('adm')) ? 'now' : 'set';
+let locked = true; // البرنامج مقفل حتى يدخل المدير كلمة المرور
+// التبويبات: المدير يختار ما يظهر منها (من الإعدادات). «الإعدادات» تبقى ظاهرة دائماً.
+const TABS = [['now', 'اليوم الآن'], ['cars', 'السائقون'], ['stats', 'الإحصائيات'], ['trips', 'الرحلات اليومية'], ['mnt', 'الصيانة'],
+  ['del', 'الحذف والتصحيح'], ['rep', 'التقارير'], ['det', 'التفاصيل'], ['inv', 'الفواتير'], ['drv', 'إدارة السائقين']];
+let hiddenTabs = []; try { hiddenTabs = JSON.parse(localStorage.getItem('hiddenTabs') || '[]').filter(t => TABS.some(x => x[0] === t)); } catch {}
+function applyTabs() {
+  document.querySelectorAll('nav button').forEach(b => { b.style.display = hiddenTabs.includes(b.dataset.t) ? 'none' : ''; });
+  if (tab !== 'set' && hiddenTabs.includes(tab)) { const f = TABS.find(x => !hiddenTabs.includes(x[0])); tab = f ? f[0] : 'set'; }
+}
+const imgs = new Map();
+const $ = s => document.querySelector(s);
+// ---------- نوافذ التأكيد والتنبيه داخل البرنامج (بدل نوافذ النظام التي تجمّد حقول الإدخال في Electron) ----------
+function dlgOpen(msg, okTxt, cancelTxt, danger, inp) {
+  return new Promise(res => {
+    let box = document.getElementById('dlg');
+    if (!box) { box = document.createElement('div'); box.id = 'dlg'; document.body.appendChild(box); }
+    const prev = document.activeElement;
+    box.innerHTML = `<div class="db ${danger ? 'danger' : ''}" role="dialog" aria-modal="true"><p class="dm"></p>${inp ? '<input id="dinp" type="password" dir="ltr" autocomplete="off" style="width:100%;margin:0 0 14px">' : ''}<div class="dbt"><button type="button" class="p ${danger ? 'r' : ''}" id="dok"></button>${cancelTxt ? '<button type="button" class="p cn" id="dcn"></button>' : ''}</div></div>`;
+    box.querySelector('.dm').textContent = msg;
+    box.querySelector('#dok').textContent = okTxt;
+    if (cancelTxt) box.querySelector('#dcn').textContent = cancelTxt;
+    const done = v => {
+      const val = inp ? (box.querySelector('#dinp') || {}).value : undefined;
+      document.removeEventListener('keydown', key, true);
+      box.classList.remove('on'); box.innerHTML = '';
+      try { if (prev && prev.focus && document.body.contains(prev)) prev.focus(); } catch {}
+      res(inp ? (v ? val : null) : v);
+    };
+    const key = e => {
+      if (e.key === 'Escape') { e.preventDefault(); done(false); }
+      else if (e.key === 'Enter' && e.target.id !== 'dcn') { e.preventDefault(); done(true); }
+    };
+    document.addEventListener('keydown', key, true);
+    box.querySelector('#dok').onclick = () => done(true);
+    const cn = box.querySelector('#dcn'); if (cn) cn.onclick = () => done(false);
+    box.classList.add('on');
+    setTimeout(() => (inp ? box.querySelector('#dinp') : (cn || box.querySelector('#dok'))).focus(), 30);
+  });
+}
+const askConfirm = (msg, okTxt = 'تأكيد', danger = true) => dlgOpen(msg, okTxt, 'إلغاء', danger);
+const showMsg = msg => dlgOpen(msg, 'حسناً', '', false);
+const askText = msg => dlgOpen(msg, 'متابعة', 'تخطي', false, true);
+
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmt = n => Number.isInteger(n) ? n : n.toFixed(1);
+const when = t => t ? new Date(t).toLocaleString('ar') : '-';
+const dbUrl = () => cfg.db.replace(/\/+$/, '');
+const setStatus = t => $('#st').textContent = t;
+const tr = m => ({
+  EMAIL_EXISTS: 'اسم المستخدم مستخدم مسبقاً',
+  INVALID_LOGIN_CREDENTIALS: 'كلمة المرور غير صحيحة',
+  INVALID_PASSWORD: 'كلمة المرور غير صحيحة',
+  EMAIL_NOT_FOUND: 'حساب المدير غير موجود، اضغط «إنشاء حساب المدير»',
+  OPERATION_NOT_ALLOWED: 'فعّل Email/Password في Firebase Authentication',
+  WEAK_PASSWORD: 'كلمة المرور ضعيفة (6 أحرف على الأقل)',
+  TOO_MANY_ATTEMPTS_TRY_LATER: 'محاولات كثيرة، حاول بعد قليل',
+  USER_DISABLED: 'تم تعطيل هذا الحساب'
+}[String(m).split(' ')[0]] || m);
+
+// ---------- Firebase Auth (REST) ----------
+async function authCall(endpoint, body) {
+  const r = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:${endpoint}?key=${encodeURIComponent(cfg.api)}`,
+    { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, returnSecureToken: true }) });
+  const j = await r.json();
+  if (j.error) throw new Error(tr(j.error.message));
+  return j;
+}
+function saveSession(j) {
+  localStorage.setItem('adm', j.refreshToken);
+  tok = j.idToken; tokExp = Date.now() + 50 * 60000;
+}
+async function token() {
+  if (tok && Date.now() < tokExp) return tok;
+  const rt = localStorage.getItem('adm');
+  if (!rt) throw new Error('سجّل دخول المدير من الإعدادات');
+  const r = await fetch('https://securetoken.googleapis.com/v1/token?key=' + encodeURIComponent(cfg.api), {
+    method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'grant_type=refresh_token&refresh_token=' + encodeURIComponent(rt) });
+  const j = await r.json();
+  if (!j.id_token) { localStorage.removeItem('adm'); throw new Error('انتهت الجلسة، سجّل الدخول مجدداً'); }
+  tok = j.id_token; tokExp = Date.now() + 50 * 60000; return tok;
+}
+async function api(method, path, body) {
+  const r = await fetch(`${dbUrl()}/${path}.json?auth=${await token()}`,
+    { method, headers: { 'Content-Type': 'application/json' }, body: body === undefined ? undefined : JSON.stringify(body) });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+
+// ---------- إحصاءات ----------
+function stats(v) {
+  const p = [...v.points].sort((a, b) => a.time - b.time); let t = 0;
+  const rows = p.map((x, i) => { const s = i ? Math.max(0, x.odo - p[i - 1].odo) : 0; t += s; return { ...x, seg: s }; });
+  return { rows, total: t };
+}
+const dur = ms => { const m = Math.max(0, Math.round(ms / 60000)), h = Math.floor(m / 60); return h ? `${h} س ${m % 60} د` : `${m} د`; };
+const kindIc = r => r.kind === 'start' ? '🟢 انطلاق' : r.kind === 'end' ? '🏁 نهاية' : r.kind === 'stop' ? '📍 توقف' : '';
+const PF = [['name', 'الاسم'], ['phone', 'رقم الهاتف'], ['carType', 'نوع السيارة'], ['model', 'الموديل'], ['color', 'اللون'], ['plate', 'رقم المركبة'], ['vin', 'رقم الشاصي']];
+const profBlock = v => { const p = v.profile || {};
+  return Object.keys(p).length ? `<div class="card"><h3>${av(v.uid)} بيانات السائق والمركبة</h3><table>${PF.map(([k, l]) => `<tr><th style="width:160px">${l}</th><td>${esc(p[k])}</td></tr>`).join('')}</table></div>`
+    : '<div class="card"><small>لم يُدخل السائق بيانات المركبة بعد.</small></div>'; };
+const edLog = r => Object.values(r.editLog || {});
+const edTag = r => { const l = edLog(r); return l.length ? ` <span title="${esc(l.map(e => `${fmt(+e.from)} ← ${fmt(+e.to)} (${when(e.time)}): ${e.reason}`).join('\n'))}" style="color:#ef6c00;cursor:help">✏ مصحّح${l.length > 1 ? ' ×' + l.length : ''} (الأصلي ${fmt(+l[0].from)})</span>` : ''; };
+const stopDur = r => r.kind === 'stop' ? (r.leave ? dur(r.leave - r.time) : 'لم يغادر بعد') : '';
+function tripsTbl(v) {
+  if (!(v.trips || []).length) return '';
+  return `<h3>الرحلات (${v.trips.length})</h3><div class="selscope" data-k="trip">
+    <div class="selbar noprint"><label><input type="checkbox" class="selall"> تحديد الكل</label><span class="selcnt">لم يُحدَّد شيء</span>
+      <button type="button" class="p r selbtn" disabled>🗑 حذف المحدد</button></div>
+    <table><tr><th>البداية</th><th>النهاية</th><th>مدة الرحلة</th><th>المسافة</th><th>التوقفات</th><th>مجموع وقت التوقف</th><th class="noprint">اختيار</th></tr>
+    ${[...v.trips].sort((a, b) => b.startTime - a.startTime).map(t => {
+      const ps = v.points.filter(p => p.tripId === t.id), stops = ps.filter(p => p.kind === 'stop'), end = t.endTime || 0;
+      const odo = end ? t.endOdo : Math.max(t.startOdo, ...ps.map(p => p.odo));
+      const stopMs = stops.reduce((a, p) => a + ((p.leave || end || Date.now()) - p.time), 0);
+      return `<tr><td>${when(t.startTime)}</td><td>${end ? when(end) : '<b>جارية</b>'}</td><td>${dur((end || Date.now()) - t.startTime)}</td><td>${fmt(odo - t.startOdo)} كم</td><td>${stops.length}</td><td>${dur(stopMs)}</td><td class="noprint"><input type="checkbox" class="sel" data-k="trip" data-u="${esc(v.uid)}" data-i="${t.id}"></td></tr>`;
+    }).join('')}</table></div>`;
+}
+// تفاصيل الفاتورة حسب التصنيف (بانزين / صيانة / أخرى)
+const invDet = i => i.cat === 'fuel' ? `⛽ بانزين — سعر اللتر: ${esc(i.ppl)} — الكمية: ${esc(i.liters)} لتر`
+  : i.cat === 'maint' ? `🔧 صيانة — العطل: ${esc(i.fault)}` : esc(i.note);
+const invImgs = i => `<img data-v="${esc(i.uid)}" data-id="${i.id}">` + (i.img2 ? `<img data-v="${esc(i.uid)}" data-id="${i.id}_2">` : '');
+async function loadImg(el) {
+  const k = el.dataset.v + '/' + el.dataset.id;
+  try {
+    if (!imgs.has(k)) {
+      const s = await api('GET', `images/${encodeURIComponent(el.dataset.v)}/${el.dataset.id}`);
+      if (s) imgs.set(k, 'data:image/jpeg;base64,' + s);
+    }
+    if (imgs.has(k)) el.src = imgs.get(k);
+  } catch {}
+}
+
+
+// ---------- لوحة الإحصائيات ----------
+let stDrv = '', stMon = '', stRange = 6;
+const mk = t => { const d = new Date(t); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); };
+const mlabel = k => { const [y, m] = k.split('-'); return new Date(+y, +m - 1, 1).toLocaleDateString('ar', { month: 'short', year: '2-digit' }); };
+const mfull = k => { const [y, m] = k.split('-'); return new Date(+y, +m - 1, 1).toLocaleDateString('ar', { month: 'long', year: 'numeric' }); };
+const monthsBack = n => { const a = [], d = new Date(); for (let i = n - 1; i >= 0; i--) { const x = new Date(d.getFullYear(), d.getMonth() - i, 1); a.push(x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0')); } return a; };
+const num = s => {
+  const t = String(s ?? '').replace(/[٠-٩]/g, c => c.charCodeAt(0) - 1632).replace(/[۰-۹]/g, c => c.charCodeAt(0) - 1776)
+    .replace(/٫/g, '.').replace(/[,٬،\s]/g, '').replace(/[^0-9.\-]/g, '');
+  const n = parseFloat(t); return isFinite(n) ? n : 0;
+};
+const money = n => Math.round(n).toLocaleString('en-US');
+function hbars(items, unit) {
+  const mx = Math.max(...items.map(i => i.val), 0) || 1;
+  return items.map(i => `<div class="hb"><div class="l" title="${esc(i.label)}">${esc(i.label)}</div>
+    <div class="t"><div class="f" style="width:${(i.val / mx * 100).toFixed(1)}%"></div></div>
+    <div class="n">${unit === 'كم' ? fmt(i.val) : money(i.val)} ${unit}</div></div>`).join('');
+}
+function cols(keys, data, unit, curKey) {
+  const mx = Math.max(...keys.map(k => data[k] || 0), 0) || 1;
+  return '<div class="cols">' + keys.map(k => {
+    const v = data[k] || 0;
+    return `<div class="col"><div class="n">${v ? (unit === 'كم' ? fmt(v) : money(v)) : ''}</div>
+      <div class="b ${k === curKey ? 'cur' : ''}" style="height:${(v / mx * 100).toFixed(1)}%"></div><div class="m">${mlabel(k)}</div></div>`;
+  }).join('') + '</div>';
+}
+function delta(cur, prev, goodDown) {
+  if (!prev) return cur ? '<span class="eq">لا توجد بيانات للشهر السابق</span>' : '<span class="eq">—</span>';
+  const p = (cur - prev) / prev * 100;
+  if (Math.abs(p) < 0.5) return '<span class="eq">▬ بلا تغيير</span>';
+  const up = p > 0, bad = goodDown ? up : !up;
+  return `<span class="${bad ? 'up' : 'dn'}">${up ? '▲' : '▼'} ${Math.abs(p).toFixed(1)}%</span>`;
+}
+function drawStats(m) {
+  const list = D.filter(v => v.points.length || v.invoices.length);
+  if (!list.length) { m.innerHTML = '<p>لا توجد بيانات بعد لعرض الإحصائيات.</p>'; return; }
+  if (stDrv && !list.find(v => v.uid === stDrv)) stDrv = '';
+  const sub = stDrv ? list.filter(v => v.uid === stDrv) : list;
+  const dist = {}, exp = {};
+  sub.forEach(v => {
+    stats(v).rows.forEach(r => { if (r.seg) dist[mk(r.time)] = (dist[mk(r.time)] || 0) + r.seg; });
+    v.invoices.forEach(i => { exp[mk(i.time)] = (exp[mk(i.time)] || 0) + num(i.amount); });
+  });
+  const keys = monthsBack(stRange), cur = keys[keys.length - 1], prv = keys[keys.length - 2];
+  const perDrv = list.map(v => ({ label: v.name, val: stats(v).rows.reduce((t, r) => (!stMon || mk(r.time) === stMon) ? t + r.seg : t, 0) }))
+    .sort((a, b) => b.val - a.val);
+  const perExp = list.map(v => ({ label: v.name, val: v.invoices.reduce((t, i) => (!stMon || mk(i.time) === stMon) ? t + num(i.amount) : t, 0) }))
+    .sort((a, b) => b.val - a.val);
+  const totD = Object.values(dist).reduce((a, b) => a + b, 0), totE = Object.values(exp).reduce((a, b) => a + b, 0);
+  const monOpts = monthsBack(12).reverse();
+  m.innerHTML = `<div class="bar"><b>السائق:</b>
+      <select id="sf1"><option value="">كل السائقين</option>${list.map(v => `<option value="${esc(v.uid)}" ${v.uid === stDrv ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select>
+      <b>المدة:</b><select id="sf2"><option value="6" ${stRange === 6 ? 'selected' : ''}>آخر 6 أشهر</option><option value="12" ${stRange === 12 ? 'selected' : ''}>آخر 12 شهراً</option></select></div>
+    <div class="kpis">
+      <div class="kpi"><small>المسافة هذا الشهر (${mfull(cur)})</small><div class="v">${fmt(dist[cur] || 0)} كم</div>
+        <small>مقارنة بالشهر السابق: ${delta(dist[cur] || 0, dist[prv] || 0, false)}</small></div>
+      <div class="kpi"><small>المصروفات هذا الشهر</small><div class="v">${money(exp[cur] || 0)}</div>
+        <small>مقارنة بالشهر السابق: ${delta(exp[cur] || 0, exp[prv] || 0, true)}</small></div>
+      <div class="kpi"><small>الشهر السابق (${mfull(prv)})</small><div class="v">${fmt(dist[prv] || 0)} كم</div><small>المصروفات: ${money(exp[prv] || 0)}</small></div>
+      <div class="kpi"><small>الإجمالي (كل الفترات)</small><div class="v">${fmt(totD)} كم</div><small>المصروفات: ${money(totE)}</small></div>
+    </div>
+    <div class="card"><h3>🏆 أكثر السائقين مسافة</h3>
+      <div class="bar"><select id="sm1"><option value="">كل الفترات</option>${monOpts.map(k => `<option value="${k}" ${k === stMon ? 'selected' : ''}>${mfull(k)}</option>`).join('')}</select></div>
+      ${hbars(perDrv, 'كم')}</div>
+    <div class="card"><h3>💰 المصروفات حسب السائق ${stMon ? '(' + mfull(stMon) + ')' : ''}</h3>${hbars(perExp, '')}</div>
+    <div class="card"><h3>📊 المصروفات الشهرية</h3>${cols(keys, exp, '', cur)}</div>
+    <div class="card"><h3>📈 مقارنة المسافة بين الأشهر</h3>${cols(keys, dist, 'كم', cur)}
+      <small>العمود الأصفر = الشهر الحالي. تُحسب المسافة على شهر نقطة التوقف الأحدث، والمصروفات من مبالغ الفواتير.</small></div>`;
+  $('#sf1').onchange = e => { stDrv = e.target.value; draw(); };
+  $('#sf2').onchange = e => { stRange = +e.target.value; draw(); };
+  $('#sm1').onchange = e => { stMon = e.target.value; draw(); };
+}
+
+
+// ---------- التقارير ----------
+let rpDrv = '', rpMon = '';
+function reportData() {
+  const list = D.filter(v => v.points.length || v.invoices.length);
+  const sub = rpDrv ? list.filter(v => v.uid === rpDrv) : list;
+  const ok = t => !rpMon || mk(t) === rpMon;
+  return sub.map(v => {
+    const rows = stats(v).rows.filter(r => ok(r.time));
+    const invs = [...v.invoices].filter(i => ok(i.time)).sort((a, b) => a.time - b.time);
+    return { v, rows, invs, dist: rows.reduce((t, r) => t + r.seg, 0), exp: invs.reduce((t, i) => t + num(i.amount), 0) };
+  });
+}
+function csvCell(x) { x = String(x ?? ''); return /[",\n\r]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; }
+function exportCsv() {
+  const R = reportData(), L = [];
+  const title = (rpMon ? mfull(rpMon) : 'كل الفترات');
+  L.push(['Agrimatco - Fleet']);
+  L.push(['تقرير المركبات', title]);
+  L.push([]);
+  L.push(['ملخص']); L.push(['السائق', 'المركبة', 'المسافة (كم)', 'نقاط التوقف', 'عدد الفواتير', 'إجمالي المصروفات']);
+  R.forEach(r => L.push([r.v.name, r.v.vehicle, fmt(r.dist), r.rows.length, r.invs.length, Math.round(r.exp)]));
+  L.push([]);
+  L.push(['نقاط التوقف']); L.push(['السائق', 'النقطة', 'العداد', 'المسافة من السابقة', 'الوقت']);
+  R.forEach(r => r.rows.forEach(x => L.push([r.v.name, x.name, x.odo, fmt(x.seg), when(x.time)])));
+  L.push([]);
+  L.push(['الفواتير']); L.push(['السائق', 'الملاحظة', 'المبلغ', 'الوقت']);
+  R.forEach(r => r.invs.forEach(i => L.push([r.v.name, i.note, i.amount, when(i.time)])));
+  const csv = '\ufeff' + L.map(r => r.map(csvCell).join(',')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'تقرير-' + (rpMon || 'الكل') + '.csv';
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function drawReports(m) {
+  const list = D.filter(v => v.points.length || v.invoices.length);
+  if (!list.length) { m.innerHTML = '<p>لا توجد بيانات بعد لإنشاء تقرير.</p>'; return; }
+  if (rpDrv && !list.find(v => v.uid === rpDrv)) rpDrv = '';
+  const R = reportData(), monOpts = monthsBack(12).reverse();
+  const totD = R.reduce((t, r) => t + r.dist, 0), totE = R.reduce((t, r) => t + r.exp, 0);
+  m.innerHTML = `<div class="bar noprint"><b>السائق:</b>
+      <select id="rf1"><option value="">كل السائقين</option>${list.map(v => `<option value="${esc(v.uid)}" ${v.uid === rpDrv ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select>
+      <b>الفترة:</b><select id="rf2"><option value="">كل الفترات</option>${monOpts.map(k => `<option value="${k}" ${k === rpMon ? 'selected' : ''}>${mfull(k)}</option>`).join('')}</select>
+      <button class="p" id="rx">📊 تصدير Excel</button><button class="p" id="rp">🖨️ طباعة</button>${window.fleetAPI ? '<button class="p" id="rpdf">📄 حفظ PDF</button>' : ''}</div>
+    <div class="card"><h2>تقرير المركبات — ${rpMon ? mfull(rpMon) : 'كل الفترات'}</h2>
+      <div>إجمالي المسافة: <b>${fmt(totD)} كم</b> — إجمالي المصروفات: <b>${money(totE)}</b> — تاريخ التقرير: ${new Date().toLocaleDateString('ar')}</div></div>
+    ${R.map(r => `<div class="card"><h3>${esc(r.v.name)} — ${esc(r.v.vehicle || 'بدون مركبة')}</h3>
+      <div>المسافة: <b>${fmt(r.dist)} كم</b> — نقاط التوقف: ${r.rows.length} — الفواتير: ${r.invs.length} — المصروفات: <b>${money(r.exp)}</b></div>
+      ${r.rows.length ? `<table><tr><th>#</th><th>النقطة</th><th>العداد</th><th>المسافة</th><th>الوقت</th></tr>${r.rows.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.name)}</td><td>${fmt(x.odo)}</td><td>${fmt(x.seg)} كم</td><td>${when(x.time)}</td></tr>`).join('')}</table>` : ''}
+      ${r.invs.length ? `<table style="margin-top:10px"><tr><th>الفاتورة</th><th>المبلغ</th><th>الوقت</th></tr>${r.invs.map(i => `<tr><td>${esc(i.note)}</td><td>${esc(i.amount)}</td><td>${when(i.time)}</td></tr>`).join('')}</table>` : ''}</div>`).join('')}`;
+  $('#rf1').onchange = e => { rpDrv = e.target.value; draw(); };
+  $('#rf2').onchange = e => { rpMon = e.target.value; draw(); };
+  $('#rx').onclick = exportCsv;
+  $('#rp').onclick = () => window.print();
+  if ($('#rpdf')) $('#rpdf').onclick = savePdf;
+}
+
+
+// ---------- فلاتر وبحث (النقاط والفواتير) ----------
+let F = { drv: '', veh: '', from: '', to: '', q: '' };
+function fRange() {
+  return [F.from ? new Date(F.from + 'T00:00:00').getTime() : -Infinity, F.to ? new Date(F.to + 'T23:59:59.999').getTime() : Infinity];
+}
+function drawFiltered(m, kind) {
+  if (!D.length) { m.innerHTML = '<p>لا توجد بيانات بعد. أضف سائقين من «إدارة السائقين» ثم يزامن السائق من هاتفه.</p>'; return; }
+  const vehs = [...new Set(D.map(v => v.vehicle).filter(Boolean))];
+  m.innerHTML = `<div class="card"><div class="bar">
+      <select id="f1"><option value="">كل السائقين</option>${D.map(v => `<option value="${esc(v.uid)}" ${v.uid === F.drv ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select>
+      <select id="f2"><option value="">كل المركبات</option>${vehs.map(x => `<option value="${esc(x)}" ${x === F.veh ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select>
+      <label>من <input type="date" id="f3" value="${esc(F.from)}"></label>
+      <label>إلى <input type="date" id="f4" value="${esc(F.to)}"></label>
+      <input id="f5" placeholder="بحث: ${kind === 'inv' ? 'ملاحظة أو مبلغ' : 'اسم النقطة'}..." value="${esc(F.q)}" style="min-width:180px">
+      <button class="p" id="fm">هذا الشهر</button><button class="p r" id="fc">مسح الفلاتر</button></div></div>
+    <div id="res"></div>`;
+  const run = () => {
+    const [t0, t1] = fRange(), q = F.q.trim().toLowerCase();
+    const drs = D.filter(v => (!F.drv || v.uid === F.drv) && (!F.veh || v.vehicle === F.veh));
+    let h = '';
+    if (kind === 'det') {
+      const rows = drs.flatMap(v => stats(v).rows.map(r => ({ ...r, car: v.name, veh: v.vehicle, uid: v.uid })))
+        .filter(r => r.time >= t0 && r.time <= t1 && (!q || String(r.name).toLowerCase().includes(q)))
+        .sort((a, b) => b.time - a.time);
+      const tot = rows.reduce((t, r) => t + r.seg, 0);
+      const one = F.drv ? D.find(v => v.uid === F.drv) : null;
+      h = `${one ? profBlock(one) : ''}<div class="kpis"><div class="kpi"><small>عدد النقاط</small><div class="v">${rows.length}</div></div>
+        <div class="kpi"><small>إجمالي المسافة</small><div class="v">${fmt(tot)} كم</div></div></div>
+        ${rows.length ? `<table><tr><th>#</th><th>السائق</th><th>المركبة</th><th>النقطة</th><th>العداد</th><th>المسافة من السابقة</th><th>الوقت</th><th>النوع</th><th>مدة التوقف</th></tr>
+        ${rows.map((r, i) => `<tr><td>${i + 1}</td><td>${av(r.uid)} ${esc(r.car)}</td><td>${esc(r.veh)}</td><td>${esc(r.name)}</td><td>${fmt(r.odo)}${edTag(r)}</td><td>${fmt(r.seg)} كم</td><td>${when(r.time)}</td><td>${kindIc(r)}</td><td>${stopDur(r)}</td></tr>`).join('')}</table>` : '<p>لا نتائج مطابقة.</p>'}${one ? tripsTbl(one) : ''}`;
+    } else {
+      const all = drs.flatMap(v => v.invoices.map(i => ({ ...i, car: v.name, uid: v.uid, veh: v.vehicle })))
+        .filter(i => i.time >= t0 && i.time <= t1 && (!q || String(i.note).toLowerCase().includes(q) || String(i.amount).toLowerCase().includes(q)))
+        .sort((a, b) => b.time - a.time);
+      const tot = all.reduce((t, i) => t + num(i.amount), 0), by = {};
+      all.forEach(i => by[i.car] = (by[i.car] || 0) + num(i.amount));
+      h = `<div class="kpis"><div class="kpi"><small>عدد الفواتير</small><div class="v">${all.length}</div></div>
+        <div class="kpi"><small>إجمالي المبالغ</small><div class="v">${money(tot)}</div></div></div>
+        ${Object.keys(by).length > 1 ? '<div class="card">' + Object.entries(by).map(([k, v]) => `<span class="chip">${esc(k)}: ${money(v)}</span>`).join('') + '</div>' : ''}
+        ${all.length ? `<div class="selscope" data-k="inv"><div class="selbar noprint"><label><input type="checkbox" class="selall"> تحديد الكل (${all.length})</label><span class="selcnt">لم يُحدَّد شيء</span>
+          <button type="button" class="p r selbtn" disabled>🗑 حذف المحدد</button></div>` : ''}
+        <div class="grid">${all.map(i => `<div class="card" style="position:relative"><label class="selpos noprint"><input type="checkbox" class="sel" data-k="inv" data-u="${esc(i.uid)}" data-i="${i.id}"></label>${invImgs(i)}
+        <div>${av(i.uid)} <b>${esc(i.car)}</b>${i.veh ? ' — ' + esc(i.veh) : ''} — ${invDet(i)}</div><div>${i.cat === 'fuel' ? 'المجموع' : 'المبلغ'}: ${esc(i.amount)}</div><small>${when(i.time)}</small></div>`).join('')}</div>${all.length ? '</div>' : ''}
+        ${all.length ? '' : '<p>لا نتائج مطابقة.</p>'}`;
+    }
+    const r = $('#res'); r.innerHTML = h;
+    r.querySelectorAll('img:not(.av)').forEach(im => {
+      im.onclick = () => { if (im.src) { $('#ovi').src = im.src; $('#ov').style.display = 'flex'; } };
+      loadImg(im);
+    });
+  };
+  $('#f1').onchange = e => { F.drv = e.target.value; run(); };
+  $('#f2').onchange = e => { F.veh = e.target.value; run(); };
+  $('#f3').onchange = e => { F.from = e.target.value; run(); };
+  $('#f4').onchange = e => { F.to = e.target.value; run(); };
+  $('#f5').oninput = e => { F.q = e.target.value; run(); };
+  $('#fm').onclick = () => {
+    const d = new Date(), pad = n => String(n).padStart(2, '0'), last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    F.from = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-01`; F.to = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(last)}`; draw();
+  };
+  $('#fc').onclick = () => { F = { drv: '', veh: '', from: '', to: '', q: '' }; draw(); };
+  run();
+}
+
+
+// ---------- تنبيهات الصيانة ----------
+let MI = [], mErr = false;
+const vkey = v => encodeURIComponent(v).replace(/\./g, '%2E');
+const PRESETS = [['تغيير زيت المحرك', 5000], ['تغيير الإطارات', 40000], ['فحص دوري', 10000], ['فلتر الهواء', 15000], ['فحص الفرامل', 20000], ['أخرى', 10000]];
+function mntVehicles() {
+  const map = {};
+  D.forEach(v => {
+    if (!v.vehicle) return;
+    const e = map[v.vehicle] || (map[v.vehicle] = { veh: v.vehicle, odo: 0, time: 0, drivers: [], items: [] });
+    if (!e.drivers.includes(v.name)) e.drivers.push(v.name);
+    v.points.forEach(p => { if (p.time >= e.time) { e.time = p.time; e.odo = p.odo; } });
+  });
+  MI.forEach(i => { (map[i.veh] || (map[i.veh] = { veh: i.veh, odo: 0, time: 0, drivers: [], items: [] })).items.push(i); });
+  return Object.values(map);
+}
+function mntState(it, odo) {
+  const rem = it.last + it.interval - odo, th = Math.min(1000, Math.max(200, it.interval * 0.1));
+  return { rem, st: rem < 0 ? 'late' : rem <= th ? 'soon' : 'ok' };
+}
+function mntAlerts() {
+  const out = [];
+  mntVehicles().forEach(v => { if (!v.odo) return; v.items.forEach(it => { const s = mntState(it, v.odo); if (s.st !== 'ok') out.push({ v, it, ...s }); }); });
+  return out.sort((a, b) => a.rem - b.rem);
+}
+function mntBanner() {
+  const a = mntAlerts(); if (!a.length) return '';
+  return `<div class="card" style="border-right:5px solid #c62828"><h3>🔧 تنبيهات الصيانة (${a.length})</h3>
+    ${a.map(x => `<div class="st-${x.st}">• ${esc(x.v.veh)} — ${esc(x.it.title)}: ${x.rem < 0 ? 'متأخرة بمقدار ' + fmt(-x.rem) + ' كم' : 'متبقي ' + fmt(x.rem) + ' كم'}</div>`).join('')}
+    <button class="p" style="margin-top:8px" onclick="tab='mnt';draw()">فتح الصيانة</button></div>`;
+}
+function drawMaint(m) {
+  const vs = mntVehicles(), carNames = [...new Set(D.map(v => v.vehicle).filter(Boolean))];
+  m.innerHTML = `${mErr ? '<div class="card msg">تعذّر قراءة بيانات الصيانة: أضف قاعدة «maintenance» إلى Rules في Firebase (انظر الشرح) ثم اضغط Publish.</div>' : ''}
+    <div class="card form"><h3>إضافة تنبيه صيانة</h3>
+      ${carNames.length ? `<select id="m1">${carNames.map(x => `<option>${esc(x)}</option>`).join('')}</select>
+      <select id="m2">${PRESETS.map((x, i) => `<option value="${i}">${x[0]}</option>`).join('')}</select>
+      <input id="m3" placeholder="اسم الصيانة" value="${PRESETS[0][0]}">
+      <input id="m4" type="number" placeholder="كل كم كيلومتر؟" value="${PRESETS[0][1]}">
+      <input id="m5" type="number" placeholder="قراءة العداد عند آخر صيانة (اتركه فارغاً = القراءة الحالية)">
+      <button class="p" id="madd">إضافة</button><div class="msg" id="mm"></div>`
+      : '<p>أسند مركبة لسائق من «إدارة السائقين» أولاً.</p>'}</div>
+    ${vs.map(v => `<div class="card"><h3>🚗 ${esc(v.veh)} <small>— ${esc(v.drivers.join('، '))}</small></h3>
+      <div>العداد الحالي: <b>${v.odo ? fmt(v.odo) + ' كم' : 'لا توجد قراءة بعد'}</b> <small>(من آخر نقطة توقف)</small></div>
+      ${v.items.length ? v.items.map(it => {
+        const s = mntState(it, v.odo), pct = Math.max(0, Math.min(100, (v.odo - it.last) / it.interval * 100));
+        const col = { ok: '#2e7d32', soon: '#ef6c00', late: '#c62828' }[s.st];
+        return `<div class="mi"><b>${esc(it.title)}</b> <small>— كل ${fmt(it.interval)} كم، آخر صيانة عند ${fmt(it.last)}${it.lastDate ? ' (' + new Date(it.lastDate).toLocaleDateString('ar') + ')' : ''}</small>
+          <div class="pg"><div style="width:${pct}%;background:${col}"></div></div>
+          <div class="st-${s.st}">${!v.odo ? '—' : s.rem < 0 ? '⚠️ متأخرة بمقدار ' + fmt(-s.rem) + ' كم' : (s.st === 'soon' ? '⏰ اقتربت: ' : '✓ ') + 'متبقي ' + fmt(s.rem) + ' كم (عند ' + fmt(it.last + it.interval) + ')'}</div>
+          <button class="p dn1" data-v="${esc(it.veh)}" data-i="${it.id}">✔ تم التنفيذ</button>
+          <button class="p r rm" data-v="${esc(it.veh)}" data-i="${it.id}">حذف</button></div>`;
+      }).join('') : '<small>لا توجد تنبيهات لهذه المركبة.</small>'}</div>`).join('')}`;
+  const say = (t, ok) => { const e = $('#mm'); if (e) { e.textContent = t; e.className = 'msg' + (ok ? ' ok' : ''); } };
+  const m2 = $('#m2'); if (m2) m2.onchange = () => { const x = PRESETS[+m2.value]; $('#m3').value = x[0]; $('#m4').value = x[1]; };
+  const add = $('#madd'); if (add) add.onclick = async () => {
+    const veh = $('#m1').value, title = $('#m3').value.trim(), interval = +$('#m4').value, lastIn = $('#m5').value;
+    const car = vs.find(x => x.veh === veh), last = lastIn === '' ? (car ? car.odo : 0) : +lastIn;
+    if (!title) return say('اكتب اسم الصيانة');
+    if (!(interval > 0)) return say('أدخل عدد الكيلومترات');
+    if (lastIn === '' && !(car && car.odo)) return say('لا توجد قراءة عداد لهذه المركبة بعد، أدخل قراءة آخر صيانة');
+    const id = Date.now();
+    try { await api('PUT', `maintenance/${vkey(veh)}/${id}`, { id, veh, title, interval, last, lastDate: Date.now() }); await poll(true); draw(); }
+    catch (e) { mErr = true; say('فشل الحفظ (' + e.message + '). تأكد من نشر قاعدة maintenance في Rules'); }
+  };
+  m.querySelectorAll('.dn1').forEach(b => b.onclick = async () => {
+    const car = vs.find(x => x.veh === b.dataset.v); if (!car || !car.odo) return showMsg('لا توجد قراءة عداد حالية');
+    try { const p = `maintenance/${vkey(b.dataset.v)}/${b.dataset.i}`; await api('PUT', p + '/last', car.odo); await api('PUT', p + '/lastDate', Date.now()); await poll(true); draw(); }
+    catch (e) { showMsg(e.message); }
+  });
+  m.querySelectorAll('.rm').forEach(b => b.onclick = async () => {
+    if (!await askConfirm('حذف هذا التنبيه؟', 'حذف')) return;
+    try { await api('DELETE', `maintenance/${vkey(b.dataset.v)}/${b.dataset.i}`); await poll(true); draw(); } catch (e) { showMsg(e.message); }
+  });
+}
+
+
+// ---------- سجل حذف النقاط ----------
+let DL = [], dErr = false;
+const dlSeen = () => +(localStorage.getItem('dlSeen') || 0);
+const dlNew = () => DL.filter(x => x.time > dlSeen()).length;
+function badges() {
+  const a = document.querySelector('nav button[data-t=mnt]'), n = mntAlerts().length;
+  if (a) a.innerHTML = 'الصيانة' + (n ? ` <span class="nb">${n}</span>` : '');
+  const b = document.querySelector('nav button[data-t=del]'), k = dlNew();
+  if (b) b.innerHTML = 'الحذف والتصحيح' + (k ? ` <span class="nb">${k}</span>` : '');
+}
+function delBanner() {
+  const k = dlNew(); if (!k) return '';
+  return `<div class="card" style="border-right:5px solid #c62828"><h3>🗑️ حذف نقاط (${k} جديد)</h3>
+    <div>حذف السائقون نقاطاً وأرسلوا أسباب الحذف.</div><button class="p" style="margin-top:8px" onclick="tab='del';draw()">عرض السجل</button></div>`;
+}
+function drawDel(m) {
+  const rows = [...DL].sort((a, b) => b.time - a.time), seen = dlSeen();
+  m.innerHTML = (dErr ? '<div class="card msg">تعذّر قراءة سجل الحذف: انشر قواعد Firebase المحدّثة (قاعدة deletions) ثم Publish.</div>' : '') +
+    (rows.length ? `<h3>سجل حذف النقاط (${rows.length})</h3><table><tr><th>السائق</th><th>المركبة</th><th>النقطة المحذوفة</th><th>العداد</th><th>وقت تسجيل النقطة</th><th>وقت الحذف</th><th>سبب الحذف</th></tr>
+      ${rows.map(x => { const v = D.find(d => d.uid === x.uid) || {}; return `<tr style="${x.time > seen ? 'background:#fff3e0' : ''}"><td>${av(x.uid)} ${esc(v.name || x.uid)}</td><td>${esc(v.vehicle || '')}</td><td>${esc(x.name)}</td><td>${fmt(+x.odo || 0)}</td><td>${when(x.pointTime)}</td><td>${when(x.time)}</td><td>${esc(x.reason)}</td></tr>`; }).join('')}</table>
+      <small>الصفوف المظلّلة جديدة. لا يستطيع السائق تعديل أو مسح هذه التقارير بعد إرسالها.</small>`
+      : '<p>لا توجد عمليات حذف (السائقون لم يعودوا قادرين على الحذف).</p>');
+  const eds = D.flatMap(v => v.points.flatMap(p => edLog(p).map(e => ({ ...e, v, p })))).sort((a, b) => b.time - a.time);
+  m.innerHTML += eds.length ? `<h3 style="margin-top:22px">✏ تصحيحات العداد (${eds.length})</h3><table><tr><th>السائق</th><th>المركبة</th><th>النقطة</th><th>من</th><th>إلى</th><th>الفرق</th><th>وقت التصحيح</th><th>السبب</th></tr>
+    ${eds.map(e => `<tr><td>${av(e.v.uid)} ${esc(e.v.name)}</td><td>${esc(e.v.vehicle || '')}</td><td>${esc(e.p.name)}</td><td>${fmt(+e.from)}</td><td>${fmt(+e.to)}</td><td>${fmt(+e.to - +e.from)}</td><td>${when(e.time)}</td><td>${esc(e.reason)}</td></tr>`).join('')}</table>` : '';
+  if (rows.length) { localStorage.setItem('dlSeen', String(rows[0].time)); badges(); }
+}
+
+
+// ---------- صور السائقين ----------
+const AV = new Map();
+const av = uid => { const v = D.find(x => x.uid === uid); return v && v.photo ? `<img class="av" data-av="${esc(uid)}" data-t="${v.photo}">` : '<span class="av">👤</span>'; };
+function loadAvatars() {
+  document.querySelectorAll('img.av[data-av]:not([data-ld])').forEach(async el => {
+    el.dataset.ld = '1'; const k = el.dataset.av + '/' + el.dataset.t;
+    try {
+      if (!AV.has(k)) { const t = await api('GET', 'avatars/' + encodeURIComponent(el.dataset.av)); if (t) AV.set(k, 'data:image/jpeg;base64,' + t); }
+      if (AV.has(k)) { el.src = AV.get(k); el.onclick = () => { $('#ovi').src = el.src; $('#ov').style.display = 'flex'; }; }
+    } catch {}
+  });
+}
+
+
+// ---------- الرحلات اليومية (لكل سائق حسب الأيام) ----------
+const dayKey = t => { const d = new Date(t); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const dayLabel = k => new Date(k + 'T12:00:00').toLocaleDateString('ar', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+const hm = t => new Date(t).toLocaleTimeString('ar', { hour: '2-digit', minute: '2-digit' });
+function drawTrips(m) {
+  if (!D.length) { m.innerHTML = '<p>لا توجد بيانات بعد.</p>'; return; }
+  m.innerHTML = `<div class="card"><div class="bar">
+      <select id="t1"><option value="">كل السائقين</option>${D.map(v => `<option value="${esc(v.uid)}" ${v.uid === F.drv ? 'selected' : ''}>${esc(v.name)}</option>`).join('')}</select>
+      <label>من <input type="date" id="t2" value="${esc(F.from)}"></label><label>إلى <input type="date" id="t3" value="${esc(F.to)}"></label>
+      <button class="p" id="tt">اليوم</button><button class="p" id="tm">هذا الشهر</button><button class="p r" id="tc">مسح</button></div></div><div id="res"></div>`;
+  const run = () => {
+    const [t0, t1] = fRange(); let h = '';
+    D.filter(v => !F.drv || v.uid === F.drv).forEach(v => {
+      const days = {};
+      stats(v).rows.filter(r => r.time >= t0 && r.time <= t1).forEach(r => (days[dayKey(r.time)] ||= { pts: [], inv: [] }).pts.push(r));
+      v.invoices.filter(i => i.time >= t0 && i.time <= t1).forEach(i => (days[dayKey(i.time)] ||= { pts: [], inv: [] }).inv.push(i));
+      const keys = Object.keys(days).sort().reverse(); if (!keys.length) return;
+      const totD = keys.reduce((t, k) => t + days[k].pts.reduce((a, r) => a + r.seg, 0), 0);
+      const totE = keys.reduce((t, k) => t + days[k].inv.reduce((a, i) => a + num(i.amount), 0), 0);
+      h += `<div class="card ${v.active ? '' : 'off'}"><h3>${av(v.uid)} ${esc(v.name)} <small>— ${esc(v.vehicle || 'بدون مركبة')}</small></h3>
+        <div>أيام العمل: <b>${keys.length}</b> — المسافة: <b>${fmt(totD)} كم</b> — المصروفات: <b>${money(totE)}</b></div>
+        ${keys.map((k, idx) => {
+          const d = days[k], dist = d.pts.reduce((a, r) => a + r.seg, 0), ex = d.inv.reduce((a, i) => a + num(i.amount), 0);
+          return `<details class="day" ${idx === 0 ? 'open' : ''}><summary><span>📅 ${dayLabel(k)}</span><small>🚗 ${fmt(dist)} كم</small><small>📍 ${d.pts.length} نقطة</small><small>🧾 ${d.inv.length} فاتورة${d.inv.length ? ' (' + money(ex) + ')' : ''}</small></summary>
+            <div class="bd">${d.pts.length ? `<table><tr><th>الوقت</th><th>النقطة</th><th>العداد</th><th>المسافة من السابقة</th><th>النوع</th><th>مدة التوقف</th></tr>
+              ${d.pts.map(r => `<tr><td>${hm(r.time)}</td><td>${esc(r.name)}</td><td>${fmt(r.odo)}${edTag(r)}</td><td>${fmt(r.seg)} كم</td><td>${kindIc(r)}</td><td>${stopDur(r)}</td></tr>`).join('')}</table>` : '<small>لا توجد نقاط توقف</small>'}
+              ${d.inv.length ? `<table style="margin-top:8px"><tr><th>الوقت</th><th>الفاتورة</th><th>المبلغ</th></tr>
+              ${d.inv.sort((a, b) => a.time - b.time).map(i => `<tr><td>${hm(i.time)}</td><td>${esc(i.note)}</td><td>${esc(i.amount)}</td></tr>`).join('')}</table>` : ''}</div></details>`;
+        }).join('')}</div>`;
+    });
+    $('#res').innerHTML = h || '<p>لا توجد رحلات ضمن هذا الفلتر.</p>';
+  };
+  $('#t1').onchange = e => { F.drv = e.target.value; run(); };
+  $('#t2').onchange = e => { F.from = e.target.value; run(); };
+  $('#t3').onchange = e => { F.to = e.target.value; run(); };
+  $('#tt').onclick = () => { F.from = F.to = dayKey(Date.now()); draw(); };
+  $('#tm').onclick = () => {
+    const d = new Date(), p2 = n => String(n).padStart(2, '0'), last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+    F.from = `${d.getFullYear()}-${p2(d.getMonth() + 1)}-01`; F.to = `${d.getFullYear()}-${p2(d.getMonth() + 1)}-${p2(last)}`; draw();
+  };
+  $('#tc').onclick = () => { F.drv = F.from = F.to = ''; draw(); };
+  run();
+}
+
+// ---------- لوحة «اليوم الآن» ----------
+function nowInfo(v) {
+  const now = Date.now(), t0 = new Date().setHours(0, 0, 0, 0);
+  const trips = [...(v.trips || [])].sort((a, b) => a.startTime - b.startTime);
+  const act = trips.filter(t => !t.endTime).pop() || null;
+  const todays = trips.filter(t => t.startTime >= t0 || t.endTime >= t0 || !t.endTime);
+  const ids = new Set(todays.map(t => t.id));
+  const tp = v.points.filter(p => ids.has(p.tripId)).sort((a, b) => a.time - b.time);
+  let km = 0, stopMs = 0, stops = 0;
+  todays.forEach(t => {
+    const ps = v.points.filter(p => p.tripId === t.id);
+    km += (t.endTime ? t.endOdo : Math.max(t.startOdo, ...ps.map(p => p.odo))) - t.startOdo;
+    ps.filter(p => p.kind === 'stop').forEach(p => { stops++; stopMs += (p.leave || t.endTime || now) - p.time; });
+  });
+  const exp = v.invoices.filter(i => i.time >= t0).reduce((a, i) => a + num(i.amount), 0);
+  const open = act ? tp.filter(p => p.tripId === act.id && p.kind === 'stop' && !p.leave).pop() : null;
+  const lastP = act ? tp.filter(p => p.tripId === act.id).pop() : null;
+  let cls = 'nw', st, detail = '', rank, warns = [];
+  if (act) {
+    if (open) { cls += ' n-sp'; st = '⏸ متوقف'; detail = `في «${esc(open.name)}» منذ ${dur(now - open.time)}`; rank = 1;
+      if (now - open.time > 60 * 60000) { cls = 'nw n-wr'; rank = 0; warns.push(`${v.name} متوقف في «${open.name}» منذ ${dur(now - open.time)}`); } }
+    else { cls += ' n-mv'; st = '🚗 في الطريق'; rank = 2;
+      const from = lastP ? Math.max(lastP.time, lastP.leave || 0) : act.startTime;
+      detail = lastP ? `منذ ${dur(now - from)} من «${esc(lastP.name)}»` : ''; }
+    if (now - act.startTime > 12 * 3600000) { cls = 'nw n-wr'; rank = 0; warns.push(`${v.name}: رحلة مفتوحة منذ ${dur(now - act.startTime)} (ربما نسي الإنهاء)`); }
+    if (v.lastSync && now - v.lastSync > 3 * 3600000) warns.push(`${v.name}: آخر مزامنة منذ ${dur(now - v.lastSync)} (قد يكون بدون إنترنت)`);
+  } else if (todays.length) { cls += ' n-dn'; st = '✅ أنهى رحلته'; rank = 4;
+    detail = `انتهت ${hm(Math.max(...todays.map(t => t.endTime)))}`; }
+  else { st = '⚪ لم يبدأ اليوم'; rank = 3; }
+  return { v, act, todays, tp, km, stopMs, stops, exp, cls, st, detail, rank, warns };
+}
+function drawNow(m) {
+  const list = D.filter(v => v.active).map(nowInfo).sort((a, b) => a.rank - b.rank || a.v.name.localeCompare(b.v.name, 'ar'));
+  if (!list.length) { m.innerHTML = '<p>لا يوجد سائقون مفعّلون بعد.</p>'; return; }
+  const c = r => list.filter(x => x.rank === r).length, warns = list.flatMap(x => x.warns);
+  const inTrip = list.filter(x => x.act).length, stopped = list.filter(x => x.act && x.st.startsWith('⏸')).length;
+  m.innerHTML = `<h3 style="margin-top:0">📍 اليوم الآن — ${new Date().toLocaleDateString('ar', { weekday: 'long', day: 'numeric', month: 'long' })}
+      <small style="color:#666">(يتحدّث تلقائياً)</small></h3>
+    ${warns.length ? `<div class="al"><b>⚠ تنبيهات (${warns.length})</b><br>${warns.map(w => '• ' + esc(w)).join('<br>')}</div>` : ''}
+    <div class="kpis">
+      <div class="kpi"><small>في رحلة الآن</small><div class="v">${inTrip}</div><small>منهم متوقفون: ${stopped}</small></div>
+      <div class="kpi"><small>لم يبدأوا اليوم</small><div class="v">${c(3)}</div></div>
+      <div class="kpi"><small>أنهوا رحلتهم</small><div class="v">${c(4)}</div></div>
+      <div class="kpi"><small>مسافة اليوم</small><div class="v">${fmt(list.reduce((a, x) => a + x.km, 0))} كم</div></div>
+      <div class="kpi"><small>وقت التوقف اليوم</small><div class="v">${dur(list.reduce((a, x) => a + x.stopMs, 0))}</div><small>${list.reduce((a, x) => a + x.stops, 0)} توقف</small></div>
+      <div class="kpi"><small>مصروفات اليوم</small><div class="v">${money(list.reduce((a, x) => a + x.exp, 0))}</div></div>
+    </div>
+    <div class="grid">${list.map(x => {
+      const rows = x.tp.slice(-6);
+      return `<div class="card click ${x.cls}" data-u="${esc(x.v.uid)}">
+        <h3>${av(x.v.uid)} ${esc(x.v.name)}</h3>
+        <div>🚗 ${esc(x.v.vehicle || 'بدون مركبة')}${x.v.profile && x.v.profile.phone ? ` — 📞 ${esc(x.v.profile.phone)}` : ''}</div>
+        <div style="font-size:18px;font-weight:bold;margin:6px 0">${x.st}</div>
+        <div>${x.detail}</div>
+        ${x.todays.length ? `<div style="margin-top:6px">🛣 ${fmt(x.km)} كم — 📍 ${x.stops} توقف (${dur(x.stopMs)})${x.exp ? ` — 🧾 ${money(x.exp)}` : ''}</div>` : ''}
+        ${x.act ? `<div>بدأت الرحلة ${hm(x.act.startTime)} — مضى ${dur(Date.now() - x.act.startTime)}</div>` : ''}
+        ${rows.length ? `<div class="tl">${x.tp.length > rows.length ? '… ' : ''}${rows.map(p => `${hm(p.time)} ${kindIc(p)} ${esc(p.name)}${p.kind === 'stop' ? ` <small>(${p.leave ? dur(p.leave - p.time) : 'متوقف'})</small>` : ''}`).join('<br>')}</div>` : ''}
+        <small>آخر مزامنة: ${x.v.lastSync ? dur(Date.now() - x.v.lastSync) + ' مضت' : '-'}</small></div>`;
+    }).join('')}</div>`;
+  m.querySelectorAll('.card.click').forEach(c => c.onclick = () => { F.drv = c.dataset.u; sel = c.dataset.u; tab = 'det'; draw(); });
+}
+setInterval(() => { if (tab === 'now') draw(); }, 30000);
+
+// ---------- الرسم ----------
+function draw() {
+  if (tab !== 'set' && credsUntil) hideCreds();
+  applyTabs();
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
+  badges();
+  const m = $('#m'); let h = '';
+  if (tab === 'set') { drawSettings(m); return; }
+  if (tab === 'now') { drawNow(m); return; }
+  if (tab === 'drv') { drawDrivers(m); return; }
+  if (tab === 'stats') { drawStats(m); return; }
+  if (tab === 'trips') { drawTrips(m); return; }
+  if (tab === 'rep') { drawReports(m); return; }
+  if (tab === 'mnt') { drawMaint(m); return; }
+  if (tab === 'del') { drawDel(m); return; }
+  if (tab === 'det' || tab === 'inv') { drawFiltered(m, tab); return; }
+  const act = D.filter(v => v.points.length || v.invoices.length || v.active);
+  if (!act.length) h = '<p>لا توجد بيانات بعد. أضف سائقين من «إدارة السائقين» ثم يزامن السائق من هاتفه.</p>';
+  else if (tab === 'cars') {
+    h = '<div class="grid">' + act.map(v => { const s = stats(v); return `<div class="card click ${v.active ? '' : 'off'}" data-u="${esc(v.uid)}">
+      <h3>${av(v.uid)} ${esc(v.name)} ${v.active ? '' : '(معطّل)'}</h3><div>🚗 ${esc(v.vehicle || 'بدون مركبة')}</div>
+      <div class="big">${fmt(s.total)} كم</div>
+      ${v.profile && v.profile.phone ? `<div>📞 ${esc(v.profile.phone)}</div><div>🚘 ${esc(v.profile.carType)} ${esc(v.profile.model)} — ${esc(v.profile.plate)}</div>` : ''}
+      <div>نقاط التوقف: ${v.points.length}</div><div>الفواتير: ${v.invoices.length}</div>
+      <small>آخر مزامنة: ${when(v.lastSync)}</small></div>`; }).join('') + '</div>';
+  } else if (tab === 'det') {
+    if (!sel || !act.find(v => v.uid === sel)) sel = act[0].uid;
+    const v = act.find(x => x.uid === sel), s = stats(v);
+    h = `<select id="sel">${act.map(x => `<option value="${esc(x.uid)}" ${x.uid === sel ? 'selected' : ''}>${esc(x.name)} — ${esc(x.vehicle)}</option>`).join('')}</select>
+      ${profBlock(v)}
+      <h3>المسافة الكلية: ${fmt(s.total)} كم — نقاط التوقف: ${s.rows.length}</h3>
+      <table><tr><th>#</th><th>النقطة</th><th>العداد</th><th>المسافة من السابقة</th><th>الوقت</th><th>النوع</th><th>مدة التوقف</th></tr>
+      ${s.rows.map((r, i) => `<tr><td>${i + 1}</td><td>${esc(r.name)}</td><td>${fmt(r.odo)}${edTag(r)}</td><td>${i ? fmt(r.seg) + ' كم' : '-'}</td><td>${when(r.time)}</td><td>${kindIc(r)}</td><td>${stopDur(r)}</td></tr>`).join('')}</table>${tripsTbl(v)}`;
+  } else {
+    const all = act.flatMap(v => v.invoices.map(i => ({ ...i, car: v.name, uid: v.uid }))).sort((a, b) => b.time - a.time);
+    h = '<div class="grid">' + all.map(i => `<div class="card">${invImgs(i)}
+      <div><b>${esc(i.car)}</b> — ${invDet(i)}</div><div>${i.cat === 'fuel' ? 'المجموع' : 'المبلغ'}: ${esc(i.amount)}</div><small>${when(i.time)}</small></div>`).join('') + '</div>';
+  }
+  m.innerHTML = (tab === 'cars' ? delBanner() + mntBanner() : '') + h;
+  m.querySelectorAll('.card.click').forEach(c => c.onclick = () => { F.drv = c.dataset.u; tab = 'det'; draw(); });
+  const se = $('#sel'); if (se) se.onchange = () => { sel = se.value; draw(); };
+  m.querySelectorAll('img:not(.av)').forEach(im => {
+    im.onclick = () => { if (im.src) { $('#ovi').src = im.src; $('#ov').style.display = 'flex'; } };
+    loadImg(im);
+  });
+}
+
+function drawDrivers(m) {
+  m.innerHTML = `<div class="card form"><h3>إضافة سائق جديد</h3>
+    <input id="d1" placeholder="اسم السائق (للعرض)">
+    <input id="d2" placeholder="اسم المستخدم (حروف إنجليزية وأرقام فقط، 3-20)" dir="ltr">
+    <input id="d3" placeholder="كلمة المرور (6 أحرف فأكثر)" dir="ltr">
+    <input id="d4" placeholder="رقم / اسم المركبة المخصصة">
+    <button class="p" id="add">إضافة السائق</button><div class="msg" id="dm">${esc(flash)}</div></div>
+    <h3>السائقون (${D.length})</h3>
+    ${D.length ? `<div class="selscope" data-k="drv"><div class="selbar noprint"><label><input type="checkbox" class="selall"> تحديد الكل</label><span class="selcnt">لم يُحدَّد شيء</span>
+      <button type="button" class="p r selbtn" disabled>🗑 حذف المحدد</button></div>` : ''}
+    <table><tr><th>اختيار</th><th></th><th>الاسم</th><th>المستخدم</th><th>المركبة</th><th>الحالة</th><th></th></tr>
+    ${D.map(v => `<tr class="${v.active ? '' : 'off'}"><td><input type="checkbox" class="sel" data-k="drv" data-u="${esc(v.uid)}" data-i="${esc(v.uid)}"></td><td>${av(v.uid)}</td><td><input data-f="n" data-u="${esc(v.uid)}" value="${esc(v.name)}"></td>
+      <td dir="ltr">${esc(v.username)}</td>
+      <td><input data-f="v" data-u="${esc(v.uid)}" value="${esc(v.vehicle)}"></td>
+      <td>${v.active ? 'مفعّل' : 'معطّل'}</td>
+      <td><button class="p sv" data-u="${esc(v.uid)}">حفظ</button>
+      <button class="p ${v.active ? 'r' : ''} tg" data-u="${esc(v.uid)}">${v.active ? 'تعطيل' : 'تفعيل'}</button></td></tr>`).join('')}</table>${D.length ? '</div>' : ''}
+    <p><small>«تعطيل» يوقف دخول السائق ويحفظ سجلاته. «حذف» يمسح الحساب وكل بياناته نهائياً، وبإدخال كلمة مرور السائق يُحذف حساب الدخول أيضاً ويتحرر اسم المستخدم.</small></p>`;
+  flash = '';
+  const say = (t, ok) => { const e = $('#dm'); e.textContent = t; e.className = 'msg' + (ok ? ' ok' : ''); };
+  $('#add').onclick = async () => {
+    const name = $('#d1').value.trim(), user = $('#d2').value.trim().toLowerCase(), pw = $('#d3').value, veh = $('#d4').value.trim();
+    if (!name) return say('أدخل اسم السائق');
+    if (!/^[a-z0-9_.]{3,20}$/.test(user)) return say('اسم المستخدم: حروف إنجليزية صغيرة وأرقام فقط (3-20)');
+    if (pw.length < 6) return say('كلمة المرور 6 أحرف على الأقل');
+    try {
+      say('جارٍ الإضافة...', true);
+      const j = await authCall('signUp', { email: user + '@fleet.local', password: pw });
+      await api('PUT', 'drivers/' + j.localId, { name, username: user, vehicle: veh, active: true, created: Date.now() });
+      flash = 'تمت إضافة السائق ✓ — أعطه كود الإعداد واسم المستخدم وكلمة المرور';
+      try { await api('PUT', 'secrets/' + j.localId, { username: user, password: pw, saved: Date.now() }); }
+      catch { flash += ' (لم تُحفظ كلمة المرور للعرض: حدّث قواعد Firebase ثم Publish)'; }
+      await poll(true); draw();
+    } catch (e) { say(e.message); }
+  };
+  m.querySelectorAll('.sv').forEach(b => b.onclick = async () => {
+    const u = b.dataset.u, g = f => m.querySelector(`input[data-f=${f}][data-u="${u}"]`).value.trim();
+    try { await api('PUT', `drivers/${u}/name`, g('n')); await api('PUT', `drivers/${u}/vehicle`, g('v')); await poll(true); flash = 'تم الحفظ ✓'; draw(); }
+    catch (e) { say(e.message); }
+  });
+  m.querySelectorAll('.tg').forEach(b => b.onclick = async () => {
+    const v = D.find(x => x.uid === b.dataset.u);
+    try { await api('PUT', `drivers/${v.uid}/active`, !v.active); await poll(true); draw(); }
+    catch (e) { say(e.message); }
+  });
+}
+
+
+// ---------- بيانات دخول السائقين (محمية بكلمة مرور المدير) ----------
+let CREDS = null, credsUntil = 0, credsTimer = null, credsMsg = '';
+function hideCreds() { CREDS = null; credsUntil = 0; clearTimeout(credsTimer); }
+function copyText(t) {
+  try { navigator.clipboard.writeText(t); return; } catch {}
+  const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove();
+}
+function drawCreds() {
+  const box = $('#crbox'); if (!box) return;
+  if (!CREDS || Date.now() > credsUntil) {
+    hideCreds();
+    box.innerHTML = `<input id="crpw" type="password" placeholder="كلمة مرور المدير" autocomplete="off">
+      <button class="p" id="crgo">إظهار البيانات</button><div class="msg" id="crm">${esc(credsMsg)}</div>`;
+    credsMsg = '';
+    const go = async () => {
+      const pw = $('#crpw').value, m = $('#crm'); if (!pw) { m.textContent = 'أدخل كلمة مرور المدير'; return; }
+      m.className = 'msg ok'; m.textContent = 'جارٍ التحقق...';
+      try {
+        await authCall('signInWithPassword', { email: ADMIN, password: pw });
+        CREDS = (await api('GET', 'secrets')) || {};
+        credsUntil = Date.now() + 60000;
+        clearTimeout(credsTimer); credsTimer = setTimeout(() => { hideCreds(); drawCreds(); }, 60000);
+        drawCreds();
+      } catch (e) { m.className = 'msg'; m.textContent = /PERMISSION|Permission/.test(e.message) ? 'حدّث قواعد Firebase (قسم secrets) ثم Publish' : e.message; }
+    };
+    $('#crgo').onclick = go; $('#crpw').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+    return;
+  }
+  const rows = D.map(v => {
+    const c = CREDS[v.uid] || {};
+    return `<tr><td>${esc(v.name)}</td><td dir="ltr">${esc(v.username)}</td>
+      <td>${c.password ? `<span class="pwv" data-pw="${esc(c.password)}">••••••••</span>
+        <button class="p cvw">👁</button><button class="p cpy" data-t="${esc(c.password)}">📋 نسخ</button>`
+        : `<small>غير محفوظة</small> <button class="p cadd" data-u="${esc(v.uid)}">إدخال</button>`}</td>
+      <td><button class="p cpu" data-t="${esc(v.username)}">📋 المستخدم</button></td></tr>`;
+  }).join('');
+  box.innerHTML = `<table class="crtbl"><tr><th>السائق</th><th>اسم المستخدم</th><th>كلمة المرور</th><th></th></tr>${rows || '<tr><td colspan="4">لا يوجد سائقون</td></tr>'}</table>
+    <div class="crnote">⚠ احرص ألا يرى أحد الشاشة. تُخفى البيانات تلقائياً بعد دقيقة.</div>
+    <button class="p r" id="crhide">إخفاء الآن</button><div class="msg" id="crm">${esc(credsMsg)}</div>`;
+  credsMsg = '';
+  $('#crhide').onclick = () => { hideCreds(); drawCreds(); };
+  box.querySelectorAll('.cvw').forEach(b => b.onclick = () => { const sp = b.previousElementSibling; sp.textContent = sp.textContent.includes('•') ? sp.dataset.pw : '••••••••'; });
+  box.querySelectorAll('.cpy,.cpu').forEach(b => b.onclick = () => { copyText(b.dataset.t); const o = b.textContent; b.textContent = '✓ تم'; setTimeout(() => { b.textContent = o; }, 1200); });
+  box.querySelectorAll('.cadd').forEach(b => b.onclick = async () => {
+    const v = D.find(x => x.uid === b.dataset.u); if (!v) return;
+    let hint = '';
+    for (let k = 0; k < 3; k++) {
+      const pw = await askText(`${hint}أدخل كلمة مرور السائق «${v.name}» (${v.username}) ليُحفظ ويظهر هنا`);
+      if (!pw) return;
+      try {
+        await authCall('signInWithPassword', { email: v.username + '@fleet.local', password: pw });
+        await api('PUT', `secrets/${v.uid}`, { username: v.username, password: pw, saved: Date.now() });
+        CREDS[v.uid] = { username: v.username, password: pw }; credsMsg = 'تم الحفظ ✓'; drawCreds(); return;
+      } catch (e) { hint = '⚠ ' + e.message + '\n'; }
+    }
+  });
+}
+function drawSettings(m) {
+  const logged = !!localStorage.getItem('adm');
+  const code = (cfg.api && cfg.db) ? 'FLEET:' + btoa(JSON.stringify({ a: cfg.api, d: cfg.db.replace(/\/+$/, '') })) : '';
+  m.innerHTML = `<div class="form">
+    <div class="card"><h3>1) إعدادات Firebase</h3>
+      <label>Web API Key</label><input id="c1" value="${esc(cfg.api)}" dir="ltr">
+      <label>رابط قاعدة البيانات</label><input id="c2" value="${esc(cfg.db)}" dir="ltr">
+      <button class="p" id="sv">حفظ</button></div>
+    <div class="card"><h3>2) حساب المدير ${logged ? '✓ مسجّل الدخول' : ''}</h3>
+      <label>كلمة مرور المدير</label><input id="c3" type="password">
+      <button class="p" id="li">دخول</button>
+      <button class="p" id="cr">إنشاء حساب المدير (أول مرة فقط)</button>
+      ${logged ? '<button class="p r" id="lo">خروج</button>' : ''}
+      <div class="msg" id="sm"></div></div>
+    ${code ? `<div class="card"><h3>3) كود الإعداد للسائقين</h3>
+      <input id="c4" readonly value="${esc(code)}" dir="ltr"><button class="p" id="cp">نسخ</button>
+      <small>يُلصق مرة واحدة في تطبيق السائق. غير مطلوب إذا أضفت google-services.json إلى التطبيق.</small></div>` : ''}
+    <div class="card"><h3>${code ? '4' : '3'}) التبويبات الظاهرة في البرنامج</h3>
+      <small>أزل العلامة عن أي تبويب لإخفائه من الشريط العلوي. «الإعدادات» تبقى ظاهرة دائماً.</small>
+      <div class="tabsel">${TABS.map(([k, l]) => `<label><input type="checkbox" data-tb="${k}" ${hiddenTabs.includes(k) ? '' : 'checked'}> ${l}</label>`).join('')}
+        <label class="fixed"><input type="checkbox" checked disabled> الإعدادات</label></div>
+      <button class="p" id="tball">إظهار الكل</button>
+      <div class="msg" id="tbm"></div></div>
+    ${logged ? `<div class="card"><h3>${code ? '5' : '4'}) بيانات دخول السائقين</h3>
+      <small>أسماء المستخدمين وكلمات المرور. لا تظهر إلا بعد إدخال كلمة مرور المدير، وتُخفى تلقائياً بعد دقيقة.</small>
+      <div id="crbox"></div></div>` : ''}</div>`;
+  if (logged) drawCreds();
+  const say = (t, ok) => { const e = $('#sm'); e.textContent = t; e.className = 'msg' + (ok ? ' ok' : ''); };
+  $('#sv').onclick = () => {
+    cfg = { api: $('#c1').value.trim(), db: $('#c2').value.trim() };
+    localStorage.setItem('cfg', JSON.stringify(cfg)); tok = null; draw();
+  };
+  const go = async ep => {
+    if (!cfg.api) return say('احفظ إعدادات Firebase أولاً');
+    try {
+      saveSession(await authCall(ep, { email: ADMIN, password: $('#c3').value }));
+      last = ''; tab = 'cars'; await poll(true); draw();
+    } catch (e) { say(e.message); }
+  };
+  $('#li').onclick = () => go('signInWithPassword');
+  $('#cr').onclick = () => go('signUp');
+  const lo = $('#lo'); if (lo) lo.onclick = () => lock();
+  const tbSave = () => { localStorage.setItem('hiddenTabs', JSON.stringify(hiddenTabs)); applyTabs(); };
+  m.querySelectorAll('input[data-tb]').forEach(c => c.onchange = () => {
+    const k = c.dataset.tb;
+    if (!c.checked && TABS.filter(x => !hiddenTabs.includes(x[0]) && x[0] !== k).length === 0) { c.checked = true; const e = $('#tbm'); e.textContent = 'أبقِ تبويباً واحداً على الأقل ظاهراً'; return; }
+    hiddenTabs = c.checked ? hiddenTabs.filter(t => t !== k) : [...hiddenTabs, k];
+    $('#tbm').textContent = ''; tbSave();
+  });
+  $('#tball').onclick = () => { hiddenTabs = []; tbSave(); m.querySelectorAll('input[data-tb]').forEach(c => c.checked = true); };
+  const cp = $('#cp'); if (cp) cp.onclick = () => { navigator.clipboard.writeText(code); cp.textContent = 'تم النسخ ✓'; };
+}
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => { tab = b.dataset.t; draw(); });
+
+async function poll(force) {
+  if (locked) return;
+  if (!cfg.api || !cfg.db || !localStorage.getItem('adm')) { setStatus('أدخل الإعدادات وسجّل دخول المدير'); return; }
+  try {
+    mErr = false;
+    dErr = false;
+    const [dr, da, mn, dl] = await Promise.all([api('GET', 'drivers'), api('GET', 'data'), api('GET', 'maintenance').catch(() => { mErr = true; return null; }), api('GET', 'deletions').catch(() => { dErr = true; return null; })]);
+    DL = Object.entries(dl || {}).flatMap(([uid, o]) => Object.values(o || {}).map(x => ({ ...x, uid })));
+    MI = Object.values(mn || {}).flatMap(o => Object.values(o || {})).filter(i => i && i.veh);
+    setStatus('متصل ✓ ' + new Date().toLocaleTimeString('ar'));
+    const txt = JSON.stringify([dr, da, mn, dl]);
+    if (txt !== last || force) {
+      last = txt;
+      D = Object.entries(dr || {}).map(([uid, d]) => {
+        const x = (da || {})[uid] || {};
+        return { uid, name: d.name || d.username, username: d.username, vehicle: d.vehicle || '', active: d.active === true,
+          lastSync: x.lastSync, photo: x.photoTime || 0, points: Object.values(x.points || {}), trips: Object.values(x.trips || {}), profile: x.profile || {}, invoices: Object.values(x.invoices || {}) };
+      });
+      if (tab !== 'set' && tab !== 'drv' && !document.querySelector('input.sel:checked')) draw();
+    }
+  } catch (e) { setStatus('خطأ: ' + e.message); }
+}
+new MutationObserver(loadAvatars).observe($('#m'), { childList: true });
+
+// ---------- حذف محدد (فواتير / رحلات): المدير يختار ما يريد حذفه ----------
+// الترتيب مهم: أولاً علامة «removed» كي لا يعيد الهاتف رفع العنصر، ثم الحذف من قاعدة البيانات
+const selScope = el => el.closest('.selscope');
+function selRefresh(sc) {
+  const all = [...sc.querySelectorAll('input.sel')], on = all.filter(c => c.checked), n = on.length;
+  all.forEach(c => { const host = c.closest('tr') || c.closest('.card'); if (host) host.classList.toggle('pk', c.checked); });
+  const sa = sc.querySelector('input.selall'); if (sa) { sa.checked = n > 0 && n === all.length; sa.indeterminate = n > 0 && n < all.length; }
+  sc.querySelector('.selcnt').textContent = n ? `محدد: ${n} من ${all.length}` : 'لم يُحدَّد شيء';
+  const bt = sc.querySelector('.selbtn'); bt.disabled = !n; bt.textContent = n ? `🗑 حذف المحدد (${n})` : '🗑 حذف المحدد';
+}
+document.addEventListener('change', e => {
+  const c = e.target; if (!(c instanceof HTMLInputElement)) return;
+  const sc = selScope(c); if (!sc) return;
+  if (c.classList.contains('selall')) sc.querySelectorAll('input.sel').forEach(x => x.checked = c.checked);
+  else if (!c.classList.contains('sel')) return;
+  selRefresh(sc);
+});
+let freedCnt = 0;
+async function delOne(kind, uid, id, tok) {
+  const now = Date.now();
+  if (kind === 'inv') {
+    await api('PUT', `removed/${uid}/${id}`, { id: Number(id), time: now, kind: 'invoice' });
+    await api('DELETE', `data/${uid}/invoices/${id}`);
+    await api('DELETE', `images/${uid}/${id}`);
+    await api('DELETE', `images/${uid}/${id}_2`).catch(() => {});
+    imgs.delete(uid + '/' + id); imgs.delete(uid + '/' + id + '_2');
+  } else if (kind === 'drv') {
+    // 1) تعطيل أولاً كي لا يستطيع هاتف السائق رفع بيانات أثناء الحذف  2) مسح بياناته  3) مسح الحساب من القائمة
+    await api('PUT', `drivers/${uid}/active`, false);
+    for (const node of ['data', 'images', 'avatars', 'deletions', 'removed', 'secrets']) await api('DELETE', `${node}/${uid}`);
+    await api('DELETE', `drivers/${uid}`);
+    if (F.drv === uid) F.drv = '';
+    if (tok) {
+      try {
+        const r = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${encodeURIComponent(cfg.api)}`,
+          { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ idToken: tok }) });
+        const j = await r.json(); if (!j.error) freedCnt++;
+      } catch {}
+    }
+  } else {
+    const v = D.find(x => x.uid === uid), pts = v ? v.points.filter(p => String(p.tripId) === String(id)) : [];
+    await api('PUT', `removed/${uid}/${id}`, { id: Number(id), time: now });
+    for (const p of pts) await api('DELETE', `data/${uid}/points/${p.id}`);
+    await api('DELETE', `data/${uid}/trips/${id}`);
+  }
+}
+document.addEventListener('click', async e => {
+  const bt = e.target.closest('.selbtn'); if (!bt) return;
+  const sc = selScope(bt), kind = sc.dataset.k;
+  const items = [...sc.querySelectorAll('input.sel:checked')].map(c => ({ uid: c.dataset.u, id: c.dataset.i }));
+  if (!items.length) return;
+  const nm = u => (D.find(x => x.uid === u) || {}).name || '';
+  const what = kind === 'inv' ? `${items.length} فاتورة` : kind === 'drv' ? `${items.length} حساب سائق (مع كل رحلاته وفواتيره وبياناته)` : `${items.length} رحلة (مع كل نقاطها)`;
+  const warn = kind === 'drv' ? 'سيُحذف الحساب وكل بياناته نهائياً ولن يستطيع السائق الدخول بعدها.\nللاحتفاظ بالسجلات استخدم «تعطيل» بدلاً من الحذف.' : 'ستُحذف نهائياً من البرنامج ومن هاتف السائق.';
+  const names = [...new Set(items.map(i => nm(i.uid)).filter(Boolean))].join('، ');
+  if (!await askConfirm(`حذف ${what}${names ? ' — ' + names : ''}؟\n${warn}\nلا يمكن التراجع.`, 'نعم، احذف')) return;
+  freedCnt = 0;
+  if (kind === 'drv') {
+    for (const it of items) {
+      const v = D.find(x => x.uid === it.uid); if (!v) continue;
+      try { // كلمة المرور المحفوظة في الإعدادات (إن وُجدت): بدون سؤال
+        const sv = await api('GET', `secrets/${it.uid}`);
+        if (sv && sv.password) it.tok = (await authCall('signInWithPassword', { email: v.username + '@fleet.local', password: sv.password })).idToken;
+      } catch {}
+      let hint = '';
+      for (let k = 0; k < 3 && !it.tok; k++) {
+        const pw = await askText(`${hint}كلمة مرور السائق «${v.name}» (${v.username})\nلحذف حساب الدخول نهائياً وتحرير اسم المستخدم.\nاضغط «تخطي» إن لم تعرفها (يُحذف السائق وبياناته ويبقى الاسم محجوزاً).`);
+        if (!pw) break;
+        try { it.tok = (await authCall('signInWithPassword', { email: v.username + '@fleet.local', password: pw })).idToken; }
+        catch (err) { hint = '⚠ ' + err.message + '\n'; }
+      }
+    }
+  }
+  bt.disabled = true; let done = 0; const fails = [];
+  for (const it of items) {
+    bt.textContent = `جارٍ الحذف ${done + 1} / ${items.length}...`;
+    try { await delOne(kind, it.uid, it.id, it.tok); done++; } catch (err) { fails.push(err.message); }
+  }
+  if (kind === 'drv' && done) flash = `تم حذف ${done} حساب ✓` + (freedCnt === done ? ' — وتحرّرت أسماء المستخدمين لإعادة استخدامها' : freedCnt ? ` — تحرّر ${freedCnt} اسم، والباقي محجوز (احذفه من Firebase Console ← Authentication ← Users)` : ' — أسماء المستخدمين ما زالت محجوزة (احذفها من Firebase Console ← Authentication ← Users)');
+  await poll(true); draw();
+  if (fails.length) await showMsg(`تم حذف ${done} وفشل ${fails.length}: ${fails[0]}\nتأكد من لصق قواعد Firebase الجديدة (قسم removed) ثم Publish.`);
+});
+
+// ---------- شاشة دخول المدير ----------
+const G = id => document.getElementById(id);
+let gMode = 'login', gFail = 0, gLockUntil = 0, gBusy = false, gTimer = null;
+function gErr(t) {
+  const e = G('gerr'); e.textContent = t || '';
+  if (t) { const c = G('gcard'); c.classList.remove('shake'); void c.offsetWidth; c.classList.add('shake'); }
+}
+function gRender() {
+  const c = gMode === 'create';
+  G('gtitle').textContent = c ? 'إنشاء حساب المدير' : 'تسجيل دخول المدير';
+  G('gbtnTxt').textContent = c ? 'إنشاء الحساب والدخول' : 'دخول';
+  G('gpw2wrap').hidden = !c;
+  G('glNew').textContent = c ? '← العودة لتسجيل الدخول' : 'أول استخدام؟ إنشاء حساب المدير';
+  G('gpw').autocomplete = c ? 'new-password' : 'current-password';
+}
+function showGate(msg) {
+  locked = true; document.body.classList.add('locked');
+  gMode = 'login'; gRender();
+  G('gpw').value = ''; G('gpw2').value = ''; G('gpw').type = 'password'; G('gpw2').type = 'password';
+  const cfgOk = !!(cfg.api && cfg.db);
+  // بعد الإعداد الأول لا تُعرض بيانات الاتصال ولا رابط إظهارها على شاشة الدخول
+  G('gapi').value = ''; G('gdb').value = ''; G('gemail').value = ADMIN;
+  G('glCfg').hidden = cfgOk;
+  G('gcfgBox').hidden = cfgOk;
+  gErr(msg || '');
+  setTimeout(() => G(G('gcfgBox').hidden ? 'gpw' : 'gapi').focus(), 60);
+}
+function unlock() {
+  locked = false; document.body.classList.remove('locked');
+  G('gpw').value = ''; G('gpw2').value = '';
+  last = ''; tab = 'now'; draw(); poll(true);
+}
+function lock() {
+  hideCreds();
+  localStorage.removeItem('adm'); tok = null; D = []; last = '';
+  showGate();
+}
+function gStartLock(sec) {
+  gLockUntil = Date.now() + sec * 1000;
+  G('gbtn').disabled = true;
+  clearInterval(gTimer);
+  const tick = () => {
+    const left = Math.ceil((gLockUntil - Date.now()) / 1000);
+    if (left <= 0) { clearInterval(gTimer); G('gbtn').disabled = false; G('gerr').textContent = ''; return; }
+    G('gerr').textContent = `محاولات خاطئة كثيرة — انتظر ${left} ثانية`;
+  };
+  tick(); gTimer = setInterval(tick, 500);
+}
+async function gSubmit() {
+  if (gBusy || Date.now() < gLockUntil) return;
+  if (!G('gcfgBox').hidden || !(cfg.api && cfg.db)) {
+    const api = G('gapi').value.trim(), db = G('gdb').value.trim();
+    if (!api || !db) return gErr('أدخل Web API Key ورابط قاعدة البيانات');
+    if (!/^https:\/\//i.test(db)) return gErr('رابط قاعدة البيانات يجب أن يبدأ بـ https://');
+    cfg = { api, db }; localStorage.setItem('cfg', JSON.stringify(cfg)); tok = null;
+  }
+  const em = G('gemail').value.trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return gErr('أدخل بريداً صحيحاً للمدير');
+  ADMIN = em; localStorage.setItem('adminEmail', em);
+  const pw = G('gpw').value;
+  if (!pw) { gErr('أدخل كلمة المرور'); return G('gpw').focus(); }
+  if (gMode === 'create') {
+    if (pw.length < 6) return gErr('كلمة المرور 6 أحرف على الأقل');
+    if (pw !== G('gpw2').value) return gErr('كلمتا المرور غير متطابقتين');
+  }
+  gBusy = true; G('gbtn').classList.add('busy'); G('gbtn').disabled = true; gErr('');
+  try {
+    saveSession(await authCall(gMode === 'create' ? 'signUp' : 'signInWithPassword', { email: ADMIN, password: pw }));
+    gFail = 0; gBusy = false; G('gbtn').classList.remove('busy'); G('gbtn').disabled = false;
+    unlock(); return;
+  } catch (e) {
+    let m = e.message || String(e);
+    if (e instanceof TypeError || /failed to fetch|network/i.test(m)) m = 'تعذّر الاتصال بالإنترنت، تحقق من الشبكة';
+    else if (/api key/i.test(m)) { m = 'Web API Key غير صحيح'; G('gcfgBox').hidden = false; }
+    else if (gMode === 'create' && /مسبقاً/.test(m)) m = 'حساب المدير موجود مسبقاً، استخدم تسجيل الدخول';
+    gErr(m);
+    if (/غير صحيحة/.test(m) && ++gFail >= 5) { gFail = 0; gStartLock(30); }
+  }
+  gBusy = false; G('gbtn').classList.remove('busy');
+  if (Date.now() >= gLockUntil) G('gbtn').disabled = false;
+  G('gpw').select();
+}
+(function () {
+  G('gbtn').onclick = gSubmit;
+  ['gemail', 'gpw', 'gpw2', 'gapi', 'gdb'].forEach(id => G(id).addEventListener('keydown', e => { if (e.key === 'Enter') gSubmit(); }));
+  ['gpw', 'gpw2'].forEach(id => {
+    const f = e => { G('gcaps').hidden = !(e.getModifierState && e.getModifierState('CapsLock')); };
+    G(id).addEventListener('keydown', f); G(id).addEventListener('keyup', f);
+    G(id).addEventListener('blur', () => { G('gcaps').hidden = true; });
+  });
+  G('geye').onclick = () => { const t = G('gpw').type === 'password' ? 'text' : 'password'; G('gpw').type = t; G('gpw2').type = t; G('gpw').focus(); };
+  G('glForgot').onclick = async () => {
+    const em = G('gemail').value.trim().toLowerCase();
+    if (!cfg.api) { G('gcfgBox').hidden = false; return gErr('أدخل Web API Key أولاً'); }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return gErr('أدخل بريد المدير أولاً');
+    if (/@fleet\.local$/i.test(em)) return gErr('هذا بريد وهمي ولا يستقبل رسائل، استخدم بريداً حقيقياً للمدير');
+    try {
+      const r = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=' + encodeURIComponent(cfg.api),
+        { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ requestType: 'PASSWORD_RESET', email: em }) });
+      const j = await r.json();
+      if (j.error) throw new Error(j.error.message === 'EMAIL_NOT_FOUND' ? 'لا يوجد حساب بهذا البريد' : tr(j.error.message));
+      gErr(''); showMsg('أُرسل رابط استعادة كلمة المرور إلى ' + em + ' (راجع Spam أيضاً)');
+    } catch (e) { gErr(e.message); }
+  };
+  G('glCfg').onclick = () => { G('gcfgBox').hidden = !G('gcfgBox').hidden; };
+  G('glNew').onclick = () => { gMode = gMode === 'login' ? 'create' : 'login'; gErr(''); gRender(); G('gpw').focus(); };
+  G('lk').onclick = async () => { if (await askConfirm('تسجيل الخروج وقفل البرنامج؟', 'تسجيل الخروج', false)) lock(); };
+})();
+showGate();
+draw(); poll(); setInterval(poll, 10000);
+
+// ---------- Agrimatco - Fleet: اسم الملف/العنوان عند الطباعة وحفظ PDF ----------
+function pdfName() {
+  const t = document.querySelector('nav button.on');
+  return 'Agrimatco - Fleet - ' + (t ? t.textContent.replace(/[0-9\s]+$/, '').trim() : 'تقرير') + ' - ' + new Date().toISOString().slice(0, 10);
+}
+(function () {
+  let old = 'Agrimatco - Fleet';
+  window.addEventListener('beforeprint', () => {
+    old = document.title; document.title = pdfName();
+    const d = document.getElementById('pdate'); if (d) d.textContent = new Date().toLocaleDateString('ar', { year: 'numeric', month: 'long', day: 'numeric' });
+  });
+  window.addEventListener('afterprint', () => { document.title = old || 'Agrimatco - Fleet'; });
+})();
+async function savePdf() {
+  const d = document.getElementById('pdate'); if (d) d.textContent = new Date().toLocaleDateString('ar', { year: 'numeric', month: 'long', day: 'numeric' });
+  document.body.classList.add('pdfmode'); // الترويسة تأتي من قالب PDF (تتكرر في كل صفحة)
+  try { await window.fleetAPI.savePdf(pdfName()); } catch (e) { showMsg('تعذّر حفظ PDF: ' + e.message); }
+  document.body.classList.remove('pdfmode');
+}
+</script></body></html>
