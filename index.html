@@ -44,6 +44,14 @@ input.err,textarea.err{border-color:#C62828;background:#FDECEA}
 .inv img{width:80px;height:80px;border-radius:14px;object-fit:cover;flex:none;background:#dfe9e3}
 .inv .tx{flex:1;font-size:14px;line-height:1.6;white-space:pre-line}
 .inv .del{border:0;background:#FDECEA;color:#C62828;border-radius:10px;padding:8px 10px;font:inherit;font-size:18px}
+.inv .ims{display:flex;gap:4px;flex:none}
+.inv .ims img{width:64px;height:80px}
+.cats{display:flex;gap:6px;margin:6px 0}
+.cats .cat{flex:1;font:inherit;font-size:15px;padding:10px 4px;border-radius:12px;border:1px solid var(--line);background:#FBFDFC;color:var(--ink)}
+.cats .cat.on{background:#CDEFD9;border-color:var(--g2);color:var(--g3);font-weight:700}
+.two{display:flex;gap:8px}
+.two .btn{flex:1;min-width:0}
+.prev{display:block;width:110px;height:110px;border-radius:14px;object-fit:cover;margin:4px auto;border:1px solid var(--line);background:#F1F5F3}
 .avatar{width:120px;height:120px;border-radius:14px;object-fit:cover;display:block;margin:6px 0}
 #toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(20,30,25,.92);color:#fff;padding:10px 18px;border-radius:22px;font-size:14px;max-width:88%;text-align:center;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.show{opacity:1}
@@ -109,6 +117,7 @@ const fmt = d => d % 1 === 0 ? String(d) : d.toFixed(1);
 const dur = ms => { const m = Math.floor(Math.max(0, ms) / 60000), h = Math.floor(m / 60); return h > 0 ? `${h} س ${m % 60} د` : `${m} د`; };
 const timeStr = t => { const d = new Date(t); return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`; };
 /** يقبل الأرقام العربية ٠-٩ والفاصلة العربية */
+const fmtNum = d => d % 1 === 0 ? String(d) : d.toFixed(2);
 const num = s => { const t = String(s||'').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[٫,]/g, '.').trim(); return t === '' || isNaN(+t) ? null : +t; };
 let toastT; function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2600); }
 
@@ -137,7 +146,7 @@ const profileDone = () => PROFILE_KEYS.every(k => prof(k).trim()) && !!S.hasAvat
 const dirty = () => (S.rev || 0) > (S.srev || 0);
 const touch = () => { S.rev = (S.rev || 0) + 1; saveS(); };
 const pendingChanges = () => Math.max(0, (S.rev || 0) - (S.srev || 0));
-const pendingInvoices = () => D.invoices.filter(i => !i.up).length;
+const pendingInvoices = () => D.invoices.filter(i => !i.up || (i.file2 && !i.up2)).length;
 const pendingDeletions = () => D.deletions.filter(i => !i.up).length;
 const activeTrip = () => [...D.trips].reverse().find(t => !t.endTime) || null;
 const allPts = () => [...D.points].sort((a, b) => a.time - b.time);
@@ -190,11 +199,15 @@ const refreshToken = () => call('POST', `https://securetoken.googleapis.com/v1/t
 
 /* ===== المزامنة (مثل Syncer.kt) ===== */
 class Disabled extends Error {}
-let syncing = false, again = false, disabled = false, lastErr = '';
+class AuthGone extends Error {}
+let syncing = false, again = false, disabled = false, authGone = false, lastErr = '';
+const GONE_MSG = 'انتهت صلاحية الحساب على هذا الجهاز (الحساب محذوف أو أُعيد إنشاؤه). سجّل الخروج ثم ادخل من جديد.';
 
 async function doSync() {
   const uid = S.uid, dels = D.deletions, invs = D.invoices;
-  const token = await refreshToken();
+  let token;
+  try { token = await refreshToken(); }
+  catch (e) { if (/USER_NOT_FOUND|TOKEN_EXPIRED|INVALID_REFRESH_TOKEN|USER_DISABLED/.test(e.message || '')) throw new AuthGone(); throw e; }
   const dr = (await call('GET', `${DB_URL}/drivers/${uid}.json?auth=${token}`)).trim();
   const d = dr === 'null' ? null : JSON.parse(dr);
   if (!d || !d.active) throw new Disabled();
@@ -223,7 +236,13 @@ async function doSync() {
   for (const o of invs) {
     const b = await imgGet('inv_' + o.id);
     if (!o.up && b) { await call('PUT', `${DB_URL}/images/${uid}/${o.id}.json?auth=${token}`, JSON.stringify(b)); o.up = true; saveD(); }
-    invNode[o.id] = { id: o.id, note: o.note || '', amount: o.amount || '', time: o.time };
+    if (o.file2 && !o.up2) {
+      const b2 = await imgGet('inv_' + o.id + '_2');
+      if (b2) await call('PUT', `${DB_URL}/images/${uid}/${o.id}_2.json?auth=${token}`, JSON.stringify(b2));
+      o.up2 = true; saveD();
+    }
+    invNode[o.id] = { id: o.id, note: o.note || '', amount: o.amount || '', time: o.time,
+      cat: o.cat || '', ppl: o.ppl || '', liters: o.liters || '', fault: o.fault || '', img2: !!o.file2 };
   }
   const profile = {}; PROFILE_KEYS.forEach(k => profile[k] = prof(k));
   const node = { name: S.driverName, vehicle: S.vehicle, lastSync: Date.now(), photoTime: av ? (S.photoTime || 0) : 0, points: pts, trips, invoices: invNode, profile };
@@ -233,14 +252,14 @@ async function applyRemoved(ids) {
   if (!ids.size) return;
   const np = D.points.filter(p => !ids.has(p.tripId)), nt = D.trips.filter(t => !ids.has(t.id));
   const gone = D.invoices.filter(o => ids.has(o.id)), ni = D.invoices.filter(o => !ids.has(o.id));
-  for (const o of gone) await imgDel('inv_' + o.id);
+  for (const o of gone) { await imgDel('inv_' + o.id); await imgDel('inv_' + o.id + '_2'); }
   if (np.length !== D.points.length || nt.length !== D.trips.length || ni.length !== D.invoices.length) { D.points = np; D.trips = nt; D.invoices = ni; saveD(); }
 }
 async function syncNow(force) {
   if (!force && !dirty()) return 'OK';
   const rev0 = S.rev || 0;
-  try { await doSync(); S.srev = Math.max(S.srev || 0, rev0); S.lastSync = Date.now(); saveS(); disabled = false; return 'OK'; }
-  catch (e) { if (e instanceof Disabled) { disabled = true; return 'DISABLED'; } lastErr = e.message || String(e); return 'RETRY'; }
+  try { await doSync(); S.srev = Math.max(S.srev || 0, rev0); S.lastSync = Date.now(); saveS(); disabled = false; authGone = false; return 'OK'; }
+  catch (e) { if (e instanceof AuthGone) { authGone = true; return 'GONE'; } if (e instanceof Disabled) { disabled = true; return 'DISABLED'; } lastErr = e.message || String(e); return 'RETRY'; }
 }
 /** مزامنة واحدة في كل مرة؛ إن وصلت تعديلات أثناءها تُعاد مرة أخرى */
 async function runSync(force = true, cb) {
@@ -249,7 +268,7 @@ async function runSync(force = true, cb) {
   do {
     again = false;
     const r = await syncNow(f);
-    msg = r === 'OK' ? 'تمت المزامنة بنجاح ✓' : r === 'DISABLED' ? 'الحساب معطّل' : 'فشلت المزامنة: ' + lastErr;
+    msg = r === 'OK' ? 'تمت المزامنة بنجاح ✓' : r === 'GONE' ? GONE_MSG : r === 'DISABLED' ? 'الحساب معطّل' : 'فشلت المزامنة: ' + lastErr;
     f = false;
   } while (again);
   syncing = false; cb && cb(msg); refreshBanners();
@@ -258,7 +277,7 @@ async function runSync(force = true, cb) {
 function autoSync() {
   if (!configured()) return;
   touch();
-  runSync(false, m => toast(m.includes('✓') ? 'تمت المزامنة ✓' : m.includes('معطّل') ? 'الحساب معطّل، راجع المدير' : 'حُفظ على الهاتف وسيُرسل عند توفر الإنترنت'));
+  runSync(false, m => toast(m.includes('✓') ? 'تمت المزامنة ✓' : m.includes('معطّل') ? 'الحساب معطّل، راجع المدير' : m === GONE_MSG ? 'الحساب غير موجود، سجّل الخروج وادخل من جديد' : 'حُفظ على الهاتف وسيُرسل عند توفر الإنترنت'));
 }
 function kick() { if (configured() && dirty() && navigator.onLine) runSync(false); }
 addEventListener('online', kick);
@@ -268,6 +287,7 @@ setInterval(() => { if (document.visibilityState === 'visible') kick(); }, 30000
 /* ===== شريط حالة الإرسال ===== */
 function bannerHTML() {
   if (!configured()) return '';
+  if (authGone) return `<div class="banner bad" data-banner>⚠ ${GONE_MSG}</div>`;
   if (disabled) return `<div class="banner bad" data-banner>⚠ الحساب معطّل — بياناتك محفوظة على الهاتف، راجع المدير</div>`;
   if (dirty()) {
     const inv = pendingInvoices(), del = pendingDeletions();
@@ -278,11 +298,27 @@ function bannerHTML() {
 function refreshBanners() { document.querySelectorAll('[data-banner]').forEach(b => { const t = document.createElement('div'); t.innerHTML = bannerHTML(); b.replaceWith(t.firstChild || document.createComment('')); }); }
 setInterval(refreshBanners, 2000);
 
+/* ===== التحديث التلقائي للتطبيق ===== */
+let updatePending = false;
+/** هل يوجد عمل غير محفوظ على الشاشة (نموذج فاتورة/بيانات أو نافذة مفتوحة)؟ */
+function formBusy() {
+  if (document.querySelector('.modal-bg') || syncing) return true;
+  if (view === 'profile') return true;
+  if (view === 'inv') return [...host.querySelectorAll('input')].some(i => i.value) || !!host.querySelector('.prev[src]');
+  return false;
+}
+function applyUpdate() {
+  if (formBusy()) { updatePending = true; toast('يوجد تحديث جديد، سيُطبَّق عند التنقل بين الشاشات'); return; }
+  toast('جارٍ تحديث التطبيق…'); setTimeout(() => location.reload(), 800);
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && updatePending && !formBusy()) location.reload(); });
+
 /* ===== التنقل ===== */
 let tab = 'trip', view = 'trip';
 const host = $('#host');
 function setChrome(on) { $('#header').style.display = on ? '' : 'none'; $('#nav').style.display = on ? '' : 'none'; }
 function go(v) {
+  if (updatePending) { location.reload(); return; }
   if (!configured()) return showLogin();
   if ((v === 'trip' || v === 'inv') && !profileDone()) v = 'profile';
   view = v; if (v !== 'profile') tab = v;
@@ -452,35 +488,96 @@ function renderTrip() {
 }
 
 /* ===== تبويب الفواتير ===== */
+const invDetail = o => o.cat === 'fuel' ? `⛽ بانزين\nسعر اللتر: ${esc(o.ppl)} — الكمية: ${esc(o.liters)} لتر\nالمجموع: ${esc(o.amount)}`
+  : o.cat === 'maint' ? `🔧 صيانة\nالعطل: ${esc(o.fault)}\nالمبلغ: ${esc(o.amount)}`
+  : `${esc(o.note)}\nالمبلغ: ${esc(o.amount)}`;
+
 async function renderInv() {
+  let cat = 'fuel', b1 = null, b2 = null;
+  const slot = (n, title) => `<div class="lbl b">${title}</div><img class="prev" id="pv${n}" alt="" style="display:none">
+    <div class="two"><button class="btn" id="c${n}">📷 تصوير</button><button class="btn" id="g${n}">🖼 معرض</button></div>`;
   const root = page(`<div class="lbl b" style="font-size:20px">فاتورة جديدة</div>
-    <input id="note" placeholder="ملاحظة (مثال: وقود، صيانة)"><input id="amt" inputmode="decimal" placeholder="المبلغ">
-    <button class="btn" id="bCam">📷 تصوير الفاتورة</button><button class="btn" id="bGal">🖼 اختيار من المعرض</button><div id="list"></div>`);
-  const add = async f => {
+    <div class="cats"><button type="button" class="cat on" data-c="fuel">⛽ بانزين</button><button type="button" class="cat" data-c="maint">🔧 صيانة</button><button type="button" class="cat" data-c="other">📝 أخرى</button></div>
+    <div id="fBox"><input id="ppl" inputmode="decimal" placeholder="سعر اللتر"><input id="ltr" inputmode="decimal" placeholder="عدد اللترات"></div>
+    <div id="mBox" style="display:none"><input id="flt" placeholder="ما هو العطل؟"></div>
+    <div id="oBox" style="display:none"><input id="note" placeholder="ملاحظة"></div>
+    <input id="amt" inputmode="decimal" placeholder="المجموع (يُحسب تلقائياً)">
+    ${slot(1, 'الصورة 1 (إلزامية)')}${slot(2, 'الصورة 2 (اختيارية)')}
+    <button class="btn" id="bSave">حفظ الفاتورة</button><div id="list"></div>`);
+  const q = s => root.querySelector(s);
+
+  const showCat = () => {
+    q('#fBox').style.display = cat === 'fuel' ? '' : 'none';
+    q('#mBox').style.display = cat === 'maint' ? '' : 'none';
+    q('#oBox').style.display = cat === 'other' ? '' : 'none';
+    q('#amt').placeholder = cat === 'fuel' ? 'المجموع (يُحسب تلقائياً)' : 'المبلغ';
+    root.querySelectorAll('.cat').forEach(b => b.classList.toggle('on', b.dataset.c === cat));
+  };
+  root.querySelectorAll('.cat').forEach(b => b.onclick = () => { cat = b.dataset.c; showCat(); });
+
+  // المجموع = سعر اللتر × عدد اللترات (تلقائياً، ويمكن تعديله يدوياً)
+  const calc = () => {
+    if (cat !== 'fuel') return;
+    const p = num(q('#ppl').value), l = num(q('#ltr').value);
+    if (p != null && l != null) q('#amt').value = fmtNum(p * l);
+  };
+  q('#ppl').oninput = calc; q('#ltr').oninput = calc;
+
+  const setImg = async (n, f) => {
     if (!f) return;
     try {
-      const b64 = await toB64(f), id = Date.now();
-      await imgSet('inv_' + id, b64);
-      D.invoices.push({ id, note: $('#note').value.trim(), amount: $('#amt').value.trim(), time: id, file: 'inv_' + id });
-      saveD(); $('#note').value = ''; $('#amt').value = ''; drawList(); autoSync();
+      const b = await toB64(f);
+      if (n === 1) b1 = b; else b2 = b;
+      const pv = q('#pv' + n); pv.src = dataUrl(b); pv.style.display = 'block';
     } catch (e) { toast(e.message); }
   };
-  root.querySelector('#bCam').onclick = async () => add(await pickImage(true));
-  root.querySelector('#bGal').onclick = async () => add(await pickImage(false));
+  [1, 2].forEach(n => {
+    q('#c' + n).onclick = async () => setImg(n, await pickImage(true));
+    q('#g' + n).onclick = async () => setImg(n, await pickImage(false));
+  });
+
+  q('#bSave').onclick = async () => {
+    if (!b1) return toast('أرفق صورة الفاتورة (الصورة 1)');
+    const o = { cat };
+    let total = num(q('#amt').value), noteTxt;
+    if (cat === 'fuel') {
+      const p = num(q('#ppl').value), l = num(q('#ltr').value);
+      if (p == null || p <= 0) return toast('أدخل سعر اللتر');
+      if (l == null || l <= 0) return toast('أدخل عدد اللترات');
+      if (total == null || total <= 0) total = p * l;
+      o.ppl = fmtNum(p); o.liters = fmtNum(l);
+      noteTxt = `بانزين — ${fmtNum(l)} لتر × ${fmtNum(p)}`;
+    } else if (cat === 'maint') {
+      const fl = q('#flt').value.trim();
+      if (!fl) return toast('اكتب ما هو العطل');
+      o.fault = fl; noteTxt = 'صيانة — ' + fl;
+    } else noteTxt = q('#note').value.trim();
+    const id = Date.now();
+    o.id = id; o.note = noteTxt; o.time = id; o.file = 'inv_' + id;
+    o.amount = total != null ? fmtNum(total) : q('#amt').value.trim();
+    try {
+      await imgSet('inv_' + id, b1);
+      if (b2) { await imgSet('inv_' + id + '_2', b2); o.file2 = 'inv_' + id + '_2'; }
+    } catch (e) { return toast(e.message); }
+    D.invoices.push(o); saveD();
+    ['#ppl', '#ltr', '#flt', '#note', '#amt'].forEach(k => q(k).value = '');
+    b1 = b2 = null; [1, 2].forEach(n => { const pv = q('#pv' + n); pv.removeAttribute('src'); pv.style.display = 'none'; });
+    drawList(); autoSync();
+  };
+
   async function drawList() {
-    const list = root.querySelector('#list'); let h = '';
+    const list = q('#list'); let h = '';
     for (const o of [...D.invoices].reverse()) {
-      const b = await imgGet('inv_' + o.id);
-      h += `<div class="inv"><img src="${dataUrl(b)}" alt=""><div class="tx">${esc(o.note)}\nالمبلغ: ${esc(o.amount)}\n${timeStr(o.time)}</div><button class="del" data-id="${o.id}">🗑</button></div>`;
+      const i1 = await imgGet('inv_' + o.id), i2 = o.file2 ? await imgGet('inv_' + o.id + '_2') : null;
+      h += `<div class="inv"><div class="ims"><img src="${dataUrl(i1)}" alt="">${i2 ? `<img src="${dataUrl(i2)}" alt="">` : ''}</div><div class="tx">${invDetail(o)}\n${timeStr(o.time)}</div><button class="del" data-id="${o.id}">🗑</button></div>`;
     }
     list.innerHTML = h;
     list.querySelectorAll('.del').forEach(btn => btn.onclick = () => dlg({ msg: 'حذف هذه الفاتورة؟', ok: 'حذف',
-      onOk: async () => { const id = +btn.dataset.id; await imgDel('inv_' + id); D.invoices = D.invoices.filter(i => i.id !== id); saveD(); drawList(); autoSync(); } }));
+      onOk: async () => { const id = +btn.dataset.id; await imgDel('inv_' + id); await imgDel('inv_' + id + '_2'); D.invoices = D.invoices.filter(i => i.id !== id); saveD(); drawList(); autoSync(); } }));
   }
-  drawList();
+  showCat(); drawList();
 }
 
-/* ===== بيانات السائق والمركبة ===== */
 async function renderProfile() {
   const F = [['name', 'الاسم الكامل'], ['phone', 'رقم الهاتف'], ['carType', 'نوع السيارة (مثال: تويوتا هايلكس)'], ['model', 'الموديل (سنة الصنع)'], ['color', 'لون السيارة'], ['plate', 'رقم المركبة (اللوحة)'], ['vin', 'رقم الشاصي']];
   const av = await imgGet('avatar');
@@ -529,7 +626,13 @@ async function renderSync() {
   root.querySelector('#bSync').onclick = () => { stat.textContent = 'جارٍ المزامنة...'; runSync(true, m => stat.textContent = m); };
   root.querySelector('#bOut').onclick = () => dlg({ msg: 'ستُرسل بياناتك أولاً ثم تُحذف من هذا الهاتف. متابعة؟', ok: 'خروج',
     onOk: () => { stat.textContent = 'جارٍ المزامنة قبل الخروج...';
-      runSync(true, async m => { if (m.includes('✓')) await logout(); else stat.textContent = 'لم يتم الخروج: ' + m; }); } });
+      runSync(true, async m => {
+        if (m.includes('✓')) await logout();
+        else if (authGone) dlg({ title: 'الحساب غير موجود', ok: 'خروج بدون إرسال', cancel: 'إلغاء',
+          msg: `${GONE_MSG}\n\nإن خرجت الآن سيُحذف من هذا الهاتف ما لم يُرسل (${pendingChanges()} تعديل، ${pendingInvoices()} فاتورة). متابعة؟`,
+          onOk: () => { logout(); } });
+        else stat.textContent = 'لم يتم الخروج: ' + m;
+      }); } });
 }
 async function logout() {
   await imgClear(); localStorage.removeItem('fleet_s'); localStorage.removeItem('fleet_d');
@@ -537,7 +640,16 @@ async function logout() {
 }
 
 /* ===== تشغيل ===== */
-if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+if ('serviceWorker' in navigator) {
+  const hadCtl = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => { if (hadCtl) applyUpdate(); });
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+    const chk = () => reg.update().catch(() => {});
+    chk(); setInterval(chk, 5 * 60 * 1000);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') chk(); });
+    addEventListener('online', chk);
+  }).catch(() => {}));
+}
 if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
 if (configured()) { hideLogin(); go('trip'); kick(); } else showLogin();
 </script>
